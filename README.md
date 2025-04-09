@@ -5,4 +5,4 @@ Ob parkiranju uporabnik preko aplikacije zabeleži čas prihoda, s čimer se izb
 Po zaključeni transakciji se parkirno mesto ponovno označi kot prosto in pripravljeno za naslednjega uporabnika.
 
 <h3>ER diagram</h3>
-![er drawio](https://github.com/user-attachments/assets/b215cf7f-5e94-4c16-ba2f-5aebac5f4a1a)
+<img src="https://github.com/user-attachments/assets/b215cf7f-5e94-4c16-ba2f-5aebac5f4a1a" alt="ER diagram SmartParking" style="max-width: 100%; height: auto;">
