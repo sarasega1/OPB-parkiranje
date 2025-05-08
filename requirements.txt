@@ -1,0 +1,4 @@
+psycopg2
+dataclasses_json
+bottle
+bcrypt
