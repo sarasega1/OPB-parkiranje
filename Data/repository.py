@@ -4,7 +4,7 @@ import Data.auth_public as auth
 import datetime
 import os
 
-from Data.models import Parkirisce
+from Data.models import Parkirisce, Oseba, ParkirisceDto
 from typing import List
 
 # Preberemo port za bazo iz okoljskih spremenljivk
@@ -19,16 +19,49 @@ class Repo:
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 
+    def dobi_osebo(self) -> List[Oseba]:               
+        self.cur.execute("""
+            SELECT trr
+            FROM stranke
         
-
+        """)
+        
+        # rezultate querya pretovrimo v python seznam objektov (transkacij)
+        stranke = [Oseba.from_dict(t) for t in self.cur.fetchall()]
+        return stranke  
+# isto poimenuj v bazi in v models!!!
     def dobi_parkirisca(self) -> List[Parkirisce]:               
         self.cur.execute("""
-            SELECT id_parkirisca, st_prostih_mest, lokacija
-            FROM Parkirisce
-            Order by id_parkirisca desc
+            SELECT id, lokacija
+            FROM parkirisca
+        
         """)
         
         # rezultate querya pretovrimo v python seznam objektov (transkacij)
         parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
         return parkirisca
+    
+    def dobi_parkiriscaDto(self) -> List[ParkirisceDto]:               
+        self.cur.execute("""
+            SELECT id, lokacija, trr
+            FROM parkirisca
+        
+        """)
+        
+        # rezultate querya pretovrimo v python seznam objektov (transkacij)
+        parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
+        return parkirisca
+    
 
+if __name__ == "__main__":
+    repo = Repo()
+    parkirisca = repo.dobi_parkirisca()
+
+    for p in parkirisca:
+        print(p)
+if __name__ == "__main__":
+    repo = Repo()
+    stranke = repo.dobi_osebo()
+
+    for p in stranke:
+        print(p)

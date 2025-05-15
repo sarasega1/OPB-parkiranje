@@ -11,7 +11,7 @@ class Oseba:
     geslo : str = field(default="")
     telefonska_stevilka : int = field(default=0)
     registrska_stevilka : str = field(default="")
-    trr : int = field(default=0)
+    trr : str = field(default="")
 
 
 @dataclass_json
@@ -25,11 +25,20 @@ class Racun:
 @dataclass_json
 @dataclass
 class Parkirisce:
-    id_parkirisca : int = field(default=0)
+    id : int = field(default=0)
     st_prostih_mest : int = field(default=0)
     lokacija : str = field(default="") 
 
     
+
+
+@dataclass_json
+@dataclass
+class ParkirisceDto:
+    id : int = field(default=0)
+    st_prostih_mest : int = field(default=0)
+    lokacija : str = field(default="") 
+    trr:  str = field(default="") 
 
 
 @dataclass_json
