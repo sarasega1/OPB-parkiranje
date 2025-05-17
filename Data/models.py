@@ -26,8 +26,15 @@ class Racun:
 @dataclass
 class Parkirisce:
     id : int = field(default=0)
-    st_prostih_mest : int = field(default=0)
     lokacija : str = field(default="") 
+    dnevni_na_voljo: int = field(default=0)
+    dnevni_zasedeni: int = field(default=0)
+    
+    @property
+    def zasedenost(self) -> str:
+        # Prikaz zasedenosti v formatu "prosta/na_voljo"
+        return f"{self.dnevni_zasedeni}/{self.dnevni_na_voljo}"
+    #Se bo to dalo?
 
     
 
