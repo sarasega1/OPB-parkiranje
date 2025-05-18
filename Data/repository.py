@@ -40,7 +40,7 @@ class Repo:
         osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
         return osebe
 
-# isto poimenuj v bazi in v models!!!
+
     def dobi_parkirisca(self) -> List[Parkirisce]:               
         self.cur.execute("""
             SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
