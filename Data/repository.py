@@ -19,6 +19,27 @@ class Repo:
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 
+    def dobi_osebo(self) -> List[Oseba]:               
+        self.cur.execute("""
+            SELECT uporabnisko_ime, geslo, telefonska_stevilka, registrska_stevilka, trr
+            FROM  stranke
+        
+        """)
+        
+        # rezultate querya pretovrimo v python seznam objektov (transkacij)
+        osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
+        return osebe  
+    def dobi_oseboDto(self) -> List[Oseba]:               
+        self.cur.execute("""
+            SELECT uporabnisko_ime
+            FROM  stranke
+        
+        """)
+        
+        # rezultate querya pretovrimo v python seznam objektov (transkacij)
+        osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
+        return osebe
+
 # isto poimenuj v bazi in v models!!!
     def dobi_parkirisca(self) -> List[Parkirisce]:               
         self.cur.execute("""
@@ -49,21 +70,11 @@ if __name__ == "__main__":
 
     for p in parkirisca:
         print(p)
-# if __name__ == "__main__":
-#     repo = Repo()
-#     stranke = repo.dobi_osebo()
+if __name__ == "__main__":
+    repo = Repo()
+    osebe = repo.dobi_osebo()
 
-#     for p in stranke:
-#         print(p)
+    for p in osebe:
+         print(p)
 
-    # def dobi_osebo(self) -> List[Oseba]:               
-    #     self.cur.execute("""
-    #         SELECT trr
-    #         FROM stranke
-        
-    #     """)
-        
-    #     # rezultate querya pretovrimo v python seznam objektov (transkacij)
-    #     stranke = [Oseba.from_dict(t) for t in self.cur.fetchall()]
-    #     return stranke  
-    
+  
