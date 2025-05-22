@@ -11,7 +11,7 @@ from typing import List
 DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
 
 ## V tej datoteki bomo implementirali razred Repo, ki bo vseboval metode za delo z bazo.
-
+# py -m Data.repository
 class Repo:
     def __init__(self):
         # Ko ustvarimo novo instanco definiramo objekt za povezavo in cursor
@@ -21,8 +21,8 @@ class Repo:
 
     def dobi_osebo(self) -> List[Oseba]:               
         self.cur.execute("""
-            SELECT uporabnisko_ime, geslo, telefonska_stevilka, registrska_stevilka, trr
-            FROM  stranke
+            SELECT ime, priimek, uporabnisko_ime, geslo, telefonska_stevilka, registrska_stevilka, trr
+            FROM  osebe
         
         """)
         
@@ -31,8 +31,8 @@ class Repo:
         return osebe  
     def dobi_oseboDto(self) -> List[Oseba]:               
         self.cur.execute("""
-            SELECT uporabnisko_ime
-            FROM  stranke
+            SELECT ime, priimek, uporabnisko_ime, telefonska_stevilka, registrska_stevilka, trr
+            FROM  osebe
         
         """)
         

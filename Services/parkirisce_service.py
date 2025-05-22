@@ -13,3 +13,9 @@ class ParkirisceService:
 
     def parkirisce(self) -> List[Parkirisce]:
         return self.repo.dobi_parkirisca()
+    
+    def dobi_oseboDto(self) -> List[Oseba]:               
+        osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
+        return osebe
+
+        

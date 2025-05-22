@@ -2,7 +2,7 @@ from functools import wraps
 from Presentation.bottleext import get, post, run, request, template, redirect, static_file, url, response, template_user
 
 from Services.parkirisce_service import ParkirisceService
-from Services.auth_service import AuthService
+#from Services.auth_service import AuthService
 import os
 
 # Ustvarimo instance servisov, ki jih potrebujemo. 
@@ -10,7 +10,7 @@ import os
 # začetku datoteke (saj ne rabimo vseh servisov v vseh metodah!)
 
 service = ParkirisceService()
-auth = AuthService()
+#auth = AuthService()
 
 
 # privzete nastavitve
@@ -22,9 +22,9 @@ def cookie_required(f):
     Dekorator, ki zahteva veljaven piškotek. Če piškotka ni, uporabnika preusmeri na stran za prijavo.
     """
     @wraps(f)
-    def decorated( *args, **kwargs):
-        cookie = request.get_cookie("uporabnik")
-        if cookie:
+    def decorated( *args, **kwargs):                                              # iz requesta dobimo vr. ki pripada ključu - uporabnik. 
+        cookie = request.get_cookie("uporabnik")                                  # Če obstaja, mu vrnemo neki, če pa cookie zanj ne obstaja, mu vrne stran za prijavo (torej potrebna je prijava!)
+        if cookie:                                                                 # povsod kjer zahtevamo prijavo, bodo s cookie required! 
             return f(*args, **kwargs)
         return template("prijava.html",uporabnik=None, rola=None, napaka="Potrebna je prijava!")
         
@@ -39,21 +39,22 @@ def static(filename):
 @cookie_required
 def index():
     """
-    Domača stran s transakcijami.
+    Domača stran s osebami.
     """   
   
+
     transakcije_dto = service.dobi_transakcije_dto()  
 
         
-    return template_user('transakcije.html', transakcije = transakcije_dto)
+    return template_user('osebe.html', osebe = transakcije_dto)
 
 @get('/osebe')
-@cookie_required
+
 def index():
     """
     Domača stran z osebami.    """   
   
-    osebe = service.dobi_osebe_dto()
+    osebe = service.dobi_oseboDto()
     return template_user('osebe.html', osebe = osebe)
 
 
@@ -112,7 +113,7 @@ def uredi_transakcijo_post():
     service.posodobi_transakcijo(id, racun, cas, znesek, opis)
     redirect(url('/'))
 
-@post('/prijava')
+@post('/prijava')                                       #glej v views prijava html
 def prijava():
     """
     Prijavi uporabnika v aplikacijo. Če je prijava uspešna, ustvari piškotke o uporabniku in njegovi roli.
@@ -157,3 +158,7 @@ def odjava():
 if __name__ == "__main__":
    
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
+
+
+
+
