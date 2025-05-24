@@ -12,6 +12,9 @@ class Oseba:
     telefonska_stevilka : int = field(default=0)
     registrska_stevilka : str = field(default="")
     trr : str = field(default="")
+    ime: str = field(default="")
+    priimek: str = field(default="")
+    #emso: int = field(default=0)
 
 
 @dataclass_json

@@ -1,0 +1,3 @@
+iz osebe html:
+  <th>EMŠO</th>
+  <td>{{oseba.emso}}</td>

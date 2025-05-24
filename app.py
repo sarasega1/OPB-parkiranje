@@ -34,29 +34,25 @@ def cookie_required(f):
 def static(filename):
     return static_file(filename, root='Presentation/static')
 
-
 @get('/')
 @cookie_required
 def index():
     """
-    Domača stran s osebami.
+    Domača stran s transakcijami.
     """   
-  
+    osebe = service.dobi_oseboDto()
+    return template_user('osebe.html', osebe=osebe, stran='osebe')
 
-    transakcije_dto = service.dobi_transakcije_dto()  
-
-        
-    return template_user('osebe.html', osebe = transakcije_dto)
 
 @get('/osebe')
-
-def index():
+@cookie_required
+def osebe_view():
     """
-    Domača stran z osebami.    """   
-  
+    Stran z osebami.
+    """   
     osebe = service.dobi_oseboDto()
-    return template_user('osebe.html', osebe = osebe)
-
+    print(osebe)
+    return template_user('osebe.html', osebe=osebe, stran='osebe')
 
 
 

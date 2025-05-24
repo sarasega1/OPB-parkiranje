@@ -15,7 +15,6 @@
                 <th>Ime</th>
                 <th>Priimek</th>
                 <th>Uporabniško ime</th>
-                <th>EMŠO</th>
                 <th>Telefonska številka</th>   
                 <th>Registrska številka</th>  
                 <th>TRR</th>  
@@ -24,13 +23,12 @@
      
       %for oseba in osebe:
         <tr>
-           <td>{{osebe.ime}}</td>           
-           <td>{{osebe.priimek}}</td>
-           <td>{{osebe.uporabnisko_ime}}</td> 
-           <td>{{osebe.emso}}</td>
-           <td>{{osebe.telefonska_stevilka}}</td>
-           <td>{{osebe.registrska_stevilka}}</td>
-           <td>{{osebe.trr}}</td>
+           <td>{{oseba.ime}}</td>           
+           <td>{{oseba.priimek}}</td>
+           <td>{{oseba.uporabnisko_ime}}</td> 
+           <td>{{oseba.telefonska_stevilka}}</td>
+           <td>{{oseba.registrska_stevilka}}</td>
+           <td>{{oseba.trr}}</td>
         </tr>
       %end
       </table>
