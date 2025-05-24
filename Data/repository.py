@@ -4,7 +4,7 @@ import Data.auth_public as auth
 import datetime
 import os
 
-from Data.models import Parkirisce, Oseba, ParkirisceDto
+from Data.models import Parkirisce, Oseba, ParkirisceDto, Uporabnik
 from typing import List
 
 # Preberemo port za bazo iz okoljskih spremenljivk
@@ -51,6 +51,30 @@ class Repo:
         # rezultate querya pretovrimo v python seznam objektov (transkacij)
         parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
         return parkirisca
+    
+    def dodaj_uporabnika(self, uporabnik: Uporabnik):
+        self.cur.execute("""
+            INSERT into uporabniki(username, role, password_hash, last_login)
+            VALUES (%s, %s, %s, %s)
+            """, (uporabnik.username,uporabnik.role, uporabnik.password_hash, uporabnik.last_login))
+        self.conn.commit()
+
+
+    def dobi_uporabnika(self, username:str) -> Uporabnik:
+        self.cur.execute("""
+            SELECT username, role, password_hash, last_login
+            FROM uporabniki
+            WHERE username = %s
+        """, (username,))
+         
+        u = Uporabnik.from_dict(self.cur.fetchone())
+        return u
+    
+    def posodobi_uporabnika(self, uporabnik: Uporabnik):
+        self.cur.execute("""
+            Update uporabniki set last_login = %s where username = %s
+            """, (uporabnik.last_login,uporabnik.username))
+        self.conn.commit()
     
     # def dobi_parkiriscaDto(self) -> List[ParkirisceDto]:               
     #     self.cur.execute("""

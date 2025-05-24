@@ -1,6 +1,6 @@
 from functools import wraps
 from Presentation.bottleext import get, post, run, request, template, redirect, static_file, url, response, template_user
-
+from Services.auth_service import AuthService
 from Services.parkirisce_service import ParkirisceService
 #from Services.auth_service import AuthService
 import os
@@ -10,7 +10,7 @@ import os
 # začetku datoteke (saj ne rabimo vseh servisov v vseh metodah!)
 
 service = ParkirisceService()
-#auth = AuthService()
+auth = AuthService()
 
 
 # privzete nastavitve
@@ -56,59 +56,6 @@ def osebe_view():
 
 
 
-@get('/transakcije_dto')
-def transakcije_dto():
-    """
-    Stran z dto transakcijami.
-    """   
-  
-    transakcije_dto = service.dobi_transakcije_dto()  
-        
-    return template_user('transakcije_dto.html', transakcije = transakcije_dto)
-
-@get('/dodaj_transakcijo')
-def dodaj_transakcijo():
-    """
-    Stran za dodajanje transakcije.  """
-    osebe = service.dobi_osebe_dto()    
-    return template_user('dodaj_transakcijo.html', osebe=osebe)
-
-
-@post('/dodaj_transakcijo')
-def dodaj_transakcijo_post():
-    # Preberemo podatke iz forme. Lahko bi uporabili kakšno dodatno metodo iz service objekta
-
-    racun = int(request.forms.get('racun'))
-    znesek = float(request.forms.get('znesek'))
-    opis = request.forms.get('opis')
-    cas = request.forms.get('cas')   
-
-    service.naredi_transakcijo(racun, cas, znesek, opis)
-    
-    
-    redirect(url('/'))
-
-@get('/uredi_transakcijo/<id:int>')
-def uredi_transakcijo(id):
-    """
-    Stran za urejanje transakcije.  """   
-    osebe = service.dobi_osebe_dto()  
-    transakcija = service.dobi_transakcijo(id)
-    return template_user('uredi_transakcijo.html', transakcija =transakcija, osebe = osebe)
-
-@post('/uredi_transakcijo')
-def uredi_transakcijo_post():
-    """
-    Stran za urejanje transakcije.  """ 
-    id = int(request.forms.get('id'))  
-    racun = int(request.forms.get('racun'))
-    znesek = float(request.forms.get('znesek'))
-    opis = request.forms.get('opis')   
-    cas = request.forms.get('cas') 
-    
-    service.posodobi_transakcijo(id, racun, cas, znesek, opis)
-    redirect(url('/'))
-
 @post('/prijava')                                       #glej v views prijava html
 def prijava():
     """
@@ -136,6 +83,9 @@ def prijava():
         
     else:
         return template("prijava.html", uporabnik=None, rola=None, napaka="Neuspešna prijava. Napačno geslo ali uporabniško ime.")
+@get('/prijava')
+def prijava_get():
+    return template("prijava.html", napaka=None)
 
 @get('/odjava')
 def odjava():
