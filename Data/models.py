@@ -77,7 +77,4 @@ class Uporabnik:
 @dataclass
 class UporabnikDto:
     username: str = field(default="")
-    role: str = field(default="")
-
-        
-    
+    role: str = field(default="") 

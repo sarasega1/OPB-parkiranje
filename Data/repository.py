@@ -75,7 +75,9 @@ class Repo:
             Update uporabniki set last_login = %s where username = %s
             """, (uporabnik.last_login,uporabnik.username))
         self.conn.commit()
-    
+      
+
+
     # def dobi_parkiriscaDto(self) -> List[ParkirisceDto]:               
     #     self.cur.execute("""
     #         SELECT id, lokacija, trr
