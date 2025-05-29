@@ -47,3 +47,23 @@ osnova:
             % end
           </ul>
         </div>
+
+
+
+
+
+        iz app 
+        """
+@get('/dobi_parkirisca')
+@cookie_required
+def index():
+    """
+    "Domača stran z transakcijami.
+    """   
+  
+    parkirisca = service.dobi_parkirisca()  
+
+        
+    return template_user('parkirisca.html', parkirisca = parkirisca)
+
+"""

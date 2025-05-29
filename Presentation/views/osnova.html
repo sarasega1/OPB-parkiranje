@@ -12,11 +12,18 @@
 <body> 
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="navbar-nav">   
-        
-        % if stran=='osebe':
-            <a class="nav-link active" href="{{url('/osebe')}}">Osebe</a>
+        % if rola == 'admin':    
+            % if stran=='osebe':
+                <a class="nav-link active" href="{{url('/osebe')}}">Osebe</a>
+            % else:
+                <a class="nav-link" href="{{url('/osebe')}}">Osebe</a>
+            % end  
+        % end    
+
+        % if stran=='parkirisca':
+            <a class="nav-link active" href="{{url('/dobi_parkirisca')}}">Parkirišča</a>
         % else:
-            <a class="nav-link" href="{{url('/osebe')}}">Osebe</a>
+            <a class="nav-link" href="{{url('/dobi_parkirisca')}}">Parkirišča</a>
         % end  
 
         </div>

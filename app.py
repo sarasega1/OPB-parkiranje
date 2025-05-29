@@ -34,17 +34,46 @@ def cookie_required(f):
 def static(filename):
     return static_file(filename, root='Presentation/static')
 
+def admin_required(f):                # napaka.html? ali pač?
+    """
+    Dekorator, ki dovoli dostop samo administratorjem.
+    """
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        rola = request.get_cookie("rola")
+        if rola == "admin":
+            return f(*args, **kwargs)
+        return template("prijava.html", napaka="Dostop zavrnjen. Nimate dovoljenj za dostop do te strani.")
+    return decorated
+
+
+
+
 @get('/')
+@admin_required
 @cookie_required
 def index():
     """
-    Domača stran s transakcijami.
+    Domača stran z osebami.
     """   
     osebe = service.dobi_oseboDto()
     return template_user('osebe.html', osebe=osebe, stran='osebe')
 
+@get('/')
+@cookie_required
+def index():
+    """
+    Domača stran s parkirišči.
+    """   
+  
+    parkirisca = service.dobi_parkirisca()  
+
+        
+    return template_user('parkirisca.html', parkirisca = parkirisca) 
+
 
 @get('/osebe')
+@admin_required
 @cookie_required
 def osebe_view():
     """
@@ -98,6 +127,23 @@ def odjava():
     
     return template('prijava.html', uporabnik=None, rola=None, napaka=None)
 
+
+@get('/parkirisce/<id:int>')
+def prikazi_parkirisce(id):
+    parkirisce = repo.dobi_parkirisce(id)
+    mesta = repo.dobi_parkirna_mesta(id)
+    return template('parkirisce_detail.html', parkirisce=parkirisce, mesta=mesta)
+
+
+@get('/dobi_parkirisca')
+@cookie_required
+def parkirisca_view():
+    """
+    Stran s parkirišči.
+    """   
+    parkirisca = service.dobi_parkirisca()
+    print(parkirisca)
+    return template_user('parkirisca.html', parkirisca=parkirisca, stran='parkirisca')
 
  # Dokler nimate razvitega vmesnika za dodajanje uporabnikov, jih dodajte kar ročno.
 #auth.dodaj_uporabnika('gasper', 'admin', 'gasper')

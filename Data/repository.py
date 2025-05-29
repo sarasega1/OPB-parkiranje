@@ -4,7 +4,7 @@ import Data.auth_public as auth
 import datetime
 import os
 
-from Data.models import Parkirisce, Oseba, ParkirisceDto, Uporabnik
+from Data.models import Parkirisce, Oseba, ParkirisceDto, Uporabnik, Parkirno_mesto
 from typing import List
 
 # Preberemo port za bazo iz okoljskih spremenljivk
@@ -52,6 +52,18 @@ class Repo:
         parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
         return parkirisca
     
+
+
+    def dobi_parkirna_mesta(self, parkirisce_id: int) -> List[Parkirno_mesto]:
+        self.cur.execute("""
+            SELECT id_parkirnega_mesta, lokacija_parkirnega_mesta, status
+            FROM parkirna_mesta
+            WHERE parkirisce_id = %s
+            """, (parkirisce_id,))
+        return [Parkirno_mesto.from_dict(row) for row in self.cur.fetchall()]
+
+
+
     def dodaj_uporabnika(self, uporabnik: Uporabnik):
         self.cur.execute("""
             INSERT into uporabniki(username, role, password_hash, last_login)

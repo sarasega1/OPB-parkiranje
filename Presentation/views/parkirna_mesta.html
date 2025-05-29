@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+%rebase('osnova.html', naslov='Podrobnosti parkirišča', stran='parkirišča')
+
+<h2>Parkirišče: {{ parkirisce.lokacija }}</h2>
+<p>Dnevna kapaciteta: {{ parkirisce.dnevni_na_voljo }} | Zasedena: {{ parkirisce.dnevni_zasedeni }}</p>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>ID mesta</th>
+      <th>Lokacija mesta</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    % for mesto in mesta:
+      <tr>
+        <td>{{ mesto.id_parkirnega_mesta }}</td>
+        <td>{{ mesto.lokacija_parkirnega_mesta }}</td>
+        <td>{{ mesto.status }}</td>
+      </tr>
+    % end
+  </tbody>
+</table>
