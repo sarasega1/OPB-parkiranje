@@ -3,30 +3,40 @@
 
 <form action="{{url('/dodaj_rezervacijo')}}" method="POST" style="width: 60%; margin-left: 5%;">
   <div class="form-group">
-    <label for="racun">Račun</label>      
-    <select class="form-select" name="racun" id="racun">
-      <option value="" disabled selected>Izberi račun</option>
-      % for oseba in osebe:
-        <option value="{{oseba.stevilka_racuna}}">{{oseba.ime + " " + oseba.priimek}}</option>
+    <label for="lokacija">Lokacija parkirišča</label>
+    <select class="form-select" name="lokacija" id="lokacija" required>
+      <option value="" disabled selected>Izberi lokacijo</option>
+      % for p in parkirisca:
+        <option value="{{p.lokacija}}">{{p.lokacija}}</option>
       % end
-    </select> 
+    </select>
   </div>
 
   <div class="form-group">
-    <label for="cas">Datum transakcije</label>
-    <input type="datetime-local" class="form-control" name="cas" id="cas">
+    <label for="id_parkirnega_mesta">Parkirno mesto (ID)</label>
+    <input type="number" class="form-control" name="id_parkirnega_mesta" id="id_parkirnega_mesta" required>
   </div>
 
   <div class="form-group">
-    <label for="znesek">Znesek</label>
-    <input class="form-control" type="number" step="0.001" name="znesek" id="znesek">      
+    <label for="prihod">Čas prihoda</label>
+    <input type="datetime-local" class="form-control" name="prihod" id="prihod" required>
   </div>
 
   <div class="form-group">
-    <label for="opis">Opis</label>
-    <textarea class="form-control" name="opis" id="opis"></textarea>      
-  </div>      
+    <label for="odhod">Čas odhoda</label>
+    <input type="datetime-local" class="form-control" name="odhod" id="odhod" required>
+  </div>
+
+  <div class="form-group">
+    <label for="uporabnisko_ime">Uporabniško ime</label>
+    <select class="form-select" name="uporabnisko_ime" id="uporabnisko_ime" required>
+      <option value="" disabled selected>Izberi uporabnika</option>
+      % for oseba in osebe:
+        <option value="{{oseba.uporabnisko_ime}}">{{oseba.ime}} {{oseba.priimek}}</option>
+      % end
+    </select>
+  </div>
 
   <br>
-  <button type="submit" class="btn btn-primary">Dodaj transakcijo</button>
+  <button type="submit" class="btn btn-primary">Rezerviraj</button>
 </form>

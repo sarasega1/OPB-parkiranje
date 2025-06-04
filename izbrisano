@@ -67,3 +67,28 @@ def index():
     return template_user('parkirisca.html', parkirisca = parkirisca)
 
 """
+
+
+
+reposirory def dobi_rezervacijo(self, id) -> :
+         self.cur.execute("""
+            SELECT id, racun, cas, znesek, opis
+            FROM transakcija
+            Where id = %s
+        """, (id,))
+         
+         t = transakcija.from_dict(self.cur.fetchone())
+         return t    
+
+def dodaj_rezervacijo(self) -> List[Rezervacija]:
+        self.cur.execute("""
+            INSERT into rezervacija(id, uporabnisko_ime, registrska_stevilka, prihod, odhod)
+            VALUES (%s, %s, %s, %s, %s)"""
+     
+
+f dodaj_transakcijo(self, t : transakcija):
+        self.cur.execute("""
+            INSERT into transakcija(znesek, racun, cas, opis)
+            VALUES (%s, %s, %s, %s)
+            """, (t.znesek, t.racun, t.cas, t.opis))
+        self.conn.commit(

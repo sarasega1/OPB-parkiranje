@@ -78,3 +78,13 @@ class Uporabnik:
 class UporabnikDto:
     username: str = field(default="")
     role: str = field(default="") 
+
+
+@dataclass_json
+@dataclass
+class Rezervacija:
+    id_parkirnega_mesta: int = field(default=0)
+    lokacija: str = field(default="")
+    prihod: datetime
+    odhod: datetime
+    uporabnisko_ime: str = field(default="")    

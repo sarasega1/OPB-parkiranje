@@ -4,7 +4,7 @@ import Data.auth_public as auth
 import datetime
 import os
 
-from Data.models import Parkirisce, Oseba, ParkirisceDto, Uporabnik, Parkirno_mesto
+from Data.models import Parkirisce, Oseba, ParkirisceDto, Uporabnik, Parkirno_mesto, Rezervacija
 from typing import List
 
 # Preberemo port za bazo iz okoljskih spremenljivk
@@ -52,17 +52,28 @@ class Repo:
         parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
         return parkirisca
     
-
-
-    def dobi_parkirna_mesta(self, parkirisce_id: int) -> List[Parkirno_mesto]:
+ def dobi_parkirisca(self) -> List[Parkirisce]:               
         self.cur.execute("""
-            SELECT id_parkirnega_mesta, lokacija_parkirnega_mesta, status
-            FROM parkirna_mesta
-            WHERE parkirisce_id = %s
-            """, (parkirisce_id,))
-        return [Parkirno_mesto.from_dict(row) for row in self.cur.fetchall()]
+            SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
+            FROM parkirisca
+        
+        """)
+        
+        # rezultate querya pretovrimo v python seznam objektov (transkacij)
+        parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
+        return parkirisca
 
-
+def dobi_rezervacije(self) -> List[Rezervacija]:               
+        self.cur.execute("""
+            SELECT id, uporabnisko_ime, registrska_stevilka, prihod, odhod
+            FROM reuervacija
+        
+        """)
+        
+        # rezultate querya pretovrimo v python seznam objektov (transkacij)
+        rezervacije = [Rezervacija.from_dict(t) for t in self.cur.fetchall()]
+        return rezervacije
+)
 
     def dodaj_uporabnika(self, uporabnik: Uporabnik):
         self.cur.execute("""
