@@ -169,11 +169,16 @@ def rezervacija_post(mesto_id):
     odhod = request.forms.get('odh')
 
     service.naredi_rezervacijo(mesto_id, ime, priimek, registracija, prihod, odhod)
-    redirect(url('/parkirisce/1'))
+    return redirect(url('/parkirisce/1'))
+
+
 @get('/rezervacija/<mesto_id:int>')
 def prikazi_rezervacijo(mesto_id):
-    # Prikaži obrazec za rezervacijo za parkirno mesto mesto_id
-    return template('rezervacija.html', mesto_id=mesto_id)
+    # pridobi uporabnikovo vlogo iz seje ali druge logike
+    rola = 'admin'  # ali 'uporabnik', ali None
+    uporabnik = None 
+    return template('rezervacija.html', mesto_id=mesto_id, rola=rola, uporabnik=uporabnik)
+
 
 if __name__ == "__main__":
    

@@ -29,20 +29,18 @@ class ParkirisceService:
     def dobi_rezervacije(self) -> List[Rezervacija]:               
         return self.repo.dobi_rezervacije()
 
-
-def naredi_rezervacijo(self, mesto_id: int, ime: str, priimek: str, registracija: str, prihod: str, odhod: str) -> None:
-    prihod_dt = datetime.strptime(prihod, "%Y-%m-%dT%H:%M")
-    odhod_dt = datetime.strptime(odhod, "%Y-%m-%dT%H:%M")
-def naredi_rezervacijo(self, mesto_id: int, ime: str, priimek: str, registracija: str, prihod: str, odhod: str) -> None:
-    rezervacija = Rezervacija(
-        id_parkirnega_mesta=mesto_id,
-        ime=ime,
-        priimek=priimek,
-        registracija=registracija,
-        prihod=prihod,
-        odhod=odhod
+    def naredi_rezervacijo(self, mesto_id: int, ime: str, priimek: str, registracija: str, prihod: str, odhod: str) -> None:
+        prihod_dt = datetime.strptime(prihod, "%Y-%m-%dT%H:%M")
+        odhod_dt = datetime.strptime(odhod, "%Y-%m-%dT%H:%M")
+        rezervacija = Rezervacija(
+            id_parkirnega_mesta=mesto_id,
+            ime=ime,
+            priimek=priimek,
+            registracija=registracija,
+            prihod=prihod_dt,
+            odhod=odhod_dt
     )
-    self.repo.dodaj_rezervacijo(rezervacija)
+        self.repo.dodaj_rezervacijo(rezervacija)
 
 
     # Vrne vsa parkirna mesta za določeno parkirišče

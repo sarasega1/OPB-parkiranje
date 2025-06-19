@@ -4,6 +4,7 @@ import Data.auth_public as auth
 import datetime
 import os
 
+
 from Data.models import Parkirisce, Oseba, ParkirisceDto, Uporabnik, Parkirno_mesto, Rezervacija
 from typing import List
 
@@ -19,6 +20,7 @@ class Repo:
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 
+    
     def dobi_osebo(self) -> List[Oseba]:               
         self.cur.execute("""
             SELECT ime, priimek, uporabnisko_ime, geslo, telefonska_stevilka, registrska_stevilka, trr
@@ -110,39 +112,18 @@ class Repo:
             """, (uporabnik.last_login,uporabnik.username))
         self.conn.commit()
 
-def dodaj_rezervacijo(self, rezervacija: Rezervacija) -> None:
-    cur.execute("""
-    UPDATE parkirna_mesta
-    SET zasedeno = 1,
-        ime = ?,
-        priimek = ?,
-        registracija = ?,
-        cas_prihoda = ?,
-        cas_odhoda = ?
-    WHERE id = ?
-""", (
-    rezervacija.ime,
-    rezervacija.priimek,
-    rezervacija.registracija,
-    rezervacija.prihod.strftime("%Y-%m-%d %H:%M:%S"),
-    rezervacija.odhod.strftime("%Y-%m-%d %H:%M:%S"),
-    rezervacija.id_parkirnega_mesta
-))
+    def dodaj_rezervacijo(self, rezervacija):
+        try:
+            self.cur.execute("""
+                INSERT INTO rezervacija (id_parkirnega_mesta, ime, priimek, registracija, prihod, odhod)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, (rezervacija.id_parkirnega_mesta, rezervacija.ime, rezervacija.priimek, rezervacija.registracija, rezervacija.prihod, rezervacija.odhod))
+            self.conn.commit()
+        except Exception as e:
+            self.conn.rollback()
+            raise e
 
-    conn = self.connect()
-    cur = conn.cursor()
-    cur.execute("""
-        UPDATE parkirna_mesta
-        SET zasedeno = 1,
-            ime = ?,
-            priimek = ?,
-            registracija = ?,
-            cas_prihoda = ?,
-            cas_odhoda = ?
-        WHERE id = ?
-    """, (rezervacija.ime, rezervacija.priimek, rezervacija.registracija, rezervacija.prihod, rezervacija.odh, rezervacija.parkirno_mesto_id))
-    conn.commit()
-    conn.close()
+
 
       
 

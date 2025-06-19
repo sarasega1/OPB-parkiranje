@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 % rebase('osnova.html', naslov='Rezervacija parkirnega mesta', stran='rezervacija')
 
-<form action="{{url('/rezervacija/' + str(mesto_id))}}" method="POST" style="width: 60%; margin-left: 5%;">
-  
+<form action="/rezervacija/{{mesto_id}}" method="POST" style="width: 60%; margin-left: 5%;">
+
   <div class="form-group">
     <label for="ime">Ime</label>
     <input type="text" class="form-control" name="ime" id="ime" required>
