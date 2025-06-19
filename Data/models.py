@@ -88,3 +88,16 @@ class Rezervacija:
     prihod: datetime = field(default= datetime.now())
     odhod: datetime = field(default= datetime.now())
     uporabnisko_ime: str = field(default="")    
+
+
+@dataclass
+class Rezervacija:
+    id_parkirnega_mesta: int = field(default=0)
+    lokacija: str = field(default="")
+    prihod: datetime = field(default= datetime.now())
+    odhod: datetime = field(default= datetime.now())
+    uporabnisko_ime: str = field(default="")
+
+    ime: str = field(default="")
+    priimek: str = field(default="")
+    registracija: str = field(default="")    

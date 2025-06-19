@@ -110,6 +110,39 @@ class Repo:
             """, (uporabnik.last_login,uporabnik.username))
         self.conn.commit()
 
+def dodaj_rezervacijo(self, rezervacija: Rezervacija) -> None:
+    cur.execute("""
+    UPDATE parkirna_mesta
+    SET zasedeno = 1,
+        ime = ?,
+        priimek = ?,
+        registracija = ?,
+        cas_prihoda = ?,
+        cas_odhoda = ?
+    WHERE id = ?
+""", (
+    rezervacija.ime,
+    rezervacija.priimek,
+    rezervacija.registracija,
+    rezervacija.prihod.strftime("%Y-%m-%d %H:%M:%S"),
+    rezervacija.odhod.strftime("%Y-%m-%d %H:%M:%S"),
+    rezervacija.id_parkirnega_mesta
+))
+
+    conn = self.connect()
+    cur = conn.cursor()
+    cur.execute("""
+        UPDATE parkirna_mesta
+        SET zasedeno = 1,
+            ime = ?,
+            priimek = ?,
+            registracija = ?,
+            cas_prihoda = ?,
+            cas_odhoda = ?
+        WHERE id = ?
+    """, (rezervacija.ime, rezervacija.priimek, rezervacija.registracija, rezervacija.prihod, rezervacija.odh, rezervacija.parkirno_mesto_id))
+    conn.commit()
+    conn.close()
 
       
 

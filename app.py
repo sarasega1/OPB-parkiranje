@@ -157,6 +157,24 @@ def podrobnosti_parkirisca(id):
         return template_user("parkirisce_podrobnosti.html", parkirisce=parkirisce)
  # Dokler nimate razvitega vmesnika za dodajanje uporabnikov, jih dodajte kar ročno.
 #auth.dodaj_uporabnika('gasper', 'admin', 'gasper')
+
+
+
+@post('/rezervacija/<mesto_id:int>')
+def rezervacija_post(mesto_id):
+    ime = request.forms.get('ime')
+    priimek = request.forms.get('priimek')
+    registracija = request.forms.get('registracija')
+    prihod = request.forms.get('prihod')
+    odhod = request.forms.get('odh')
+
+    service.naredi_rezervacijo(mesto_id, ime, priimek, registracija, prihod, odhod)
+    redirect(url('/parkirisce/1'))
+@get('/rezervacija/<mesto_id:int>')
+def prikazi_rezervacijo(mesto_id):
+    # Prikaži obrazec za rezervacijo za parkirno mesto mesto_id
+    return template('rezervacija.html', mesto_id=mesto_id)
+
 if __name__ == "__main__":
    
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
