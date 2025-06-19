@@ -52,28 +52,39 @@ class Repo:
         parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
         return parkirisca
     
- def dobi_parkirisca(self) -> List[Parkirisce]:               
+    def dobi_parkirisca(self) -> List[Parkirisce]:               
+            self.cur.execute("""
+                SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
+                FROM parkirisca
+            
+            """)
+        
+            # rezultate querya pretovrimo v python seznam objektov (transkacij)
+            parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
+            return parkirisca
+    def dobi_parkirisce(self, id: int) -> Parkirisce:
         self.cur.execute("""
-            SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
-            FROM parkirisca
-        
-        """)
-        
-        # rezultate querya pretovrimo v python seznam objektov (transkacij)
-        parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
-        return parkirisca
+                     SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
+                     FROM parkirisca
+                     WHERE id = %s
+                     """, (id,))
+        row = self.cur.fetchone()
+        if row:
+          return Parkirisce.from_dict(row)
+        return None
 
-def dobi_rezervacije(self) -> List[Rezervacija]:               
-        self.cur.execute("""
-            SELECT id, uporabnisko_ime, registrska_stevilka, prihod, odhod
-            FROM reuervacija
-        
-        """)
-        
-        # rezultate querya pretovrimo v python seznam objektov (transkacij)
-        rezervacije = [Rezervacija.from_dict(t) for t in self.cur.fetchall()]
-        return rezervacije
-)
+
+    def dobi_rezervacije(self) -> List[Rezervacija]:               
+            self.cur.execute("""
+                SELECT id, uporabnisko_ime, registrska_stevilka, prihod, odhod
+                FROM reuervacija
+            
+            """)
+            
+            # rezultate querya pretovrimo v python seznam objektov (transkacij)
+            rezervacije = [Rezervacija.from_dict(t) for t in self.cur.fetchall()]
+            return rezervacije
+
 
     def dodaj_uporabnika(self, uporabnik: Uporabnik):
         self.cur.execute("""
@@ -98,6 +109,8 @@ def dobi_rezervacije(self) -> List[Rezervacija]:
             Update uporabniki set last_login = %s where username = %s
             """, (uporabnik.last_login,uporabnik.username))
         self.conn.commit()
+
+
       
 
 

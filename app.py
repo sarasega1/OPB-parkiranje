@@ -128,23 +128,33 @@ def odjava():
     return template('prijava.html', uporabnik=None, rola=None, napaka=None)
 
 
-@get('/parkirisce/<id:int>')
-def prikazi_parkirisce(id):
-    parkirisce = repo.dobi_parkirisce(id)
-    mesta = repo.dobi_parkirna_mesta(id)
-    return template('parkirisce_detail.html', parkirisce=parkirisce, mesta=mesta)
 
 
 @get('/dobi_parkirisca')
 @cookie_required
 def parkirisca_view():
-    """
-    Stran s parkirišči.
-    """   
     parkirisca = service.dobi_parkirisca()
-    print(parkirisca)
-    return template_user('parkirisca.html', parkirisca=parkirisca, stran='parkirisca')
+    rola = request.get_cookie("rola")
 
+    if rola == "admin":
+        return template_user('parkirisca.html', parkirisca=parkirisca, stran='parkirisca')
+    else:
+        return template_user('parkirisca.html', parkirisca=parkirisca, stran='parkirisca')
+
+
+@get('/parkirisce/<id:int>')
+@cookie_required
+def podrobnosti_parkirisca(id):
+    parkirisce = service.dobi_parkirisce(id)
+    if parkirisce is None:
+        return template("napaka.html", napaka="Parkirišče ne obstaja.")
+    
+    rola = request.get_cookie("rola")
+
+    if rola == "admin":
+        return template_user("parkirisce_podrobnosti2.html", parkirisce=parkirisce)
+    else:
+        return template_user("parkirisce_podrobnosti.html", parkirisce=parkirisce)
  # Dokler nimate razvitega vmesnika za dodajanje uporabnikov, jih dodajte kar ročno.
 #auth.dodaj_uporabnika('gasper', 'admin', 'gasper')
 if __name__ == "__main__":

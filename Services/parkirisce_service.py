@@ -20,10 +20,14 @@ class ParkirisceService:
     
     def dobi_parkirisca(self) -> List[Parkirisce]:               
         return self.repo.dobi_parkirisca()
+    
+    def dobi_parkirisce(self, id: int) -> Parkirisce:
+        return self.repo.dobi_parkirisce(id)
+
    
     def dobi_rezervacije(self) -> List[Rezervacija]:               
         return self.repo.dobi_rezervacije()
-)
+
 
 
     # Vrne vsa parkirna mesta za določeno parkirišče
@@ -34,5 +38,8 @@ class ParkirisceService:
         osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
         return osebe
 """
+
+        
+
 
         

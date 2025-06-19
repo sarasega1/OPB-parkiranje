@@ -1,46 +1,47 @@
 <!DOCTYPE html>
 %rebase('osnova.html', naslov='Parkirišča', stran='parkirišča')
 
-<div >
+<div>
   <h2>Seznam vseh parkirišč</h2>
-    <a  href="{{url('/dobi_parkirisca')}}" class="btn btn-light">
-        Dodaj novo transakcijo
-     </a>
-       <br>
-      <br>  
-    <div style="display: flex;">
 
-    <div style="flex:1;">
+  <a href="{{url('/dobi_parkirisca')}}" class="btn btn-light">
+    Dodaj novo transakcijo
+  </a>
+
+  <br><br>
+
+  <div style="display: flex;">
+    <div style="flex: 1;">
       <table class="table">
         <thead>
-            <tr>
-                
-                <th>ID</th>
-                <th>Lokacija</th>
-                <th>Dnevni na voljo</th>  
-                <th>Dnevni zasedeni</th>  
-                <th>Uredi</th>   
-             </tr>
+          <tr>
+            <th>ID</th>
+            <th>Lokacija</th>
+            <th>Dnevni na voljo</th>
+            <th>Dnevni zasedeni</th>
+            <th>Uredi</th>
+          </tr>
         </thead>
-     
-      %for parkirisce in parkirisca:
-        <tr>
-           <td>{{parkirisce.id}}</td>           
-           <td>{{parkirisce.lokacija}}</td>
-           <td>{{parkirisce.dnevni_na_voljo}}</td>
-           <td>{{parkirisce.dnevni_zasedeni}}</td>
-           <td>
-            <a href="{{url('/dobi_parkirisca')}}"> uredi</a>
-           </td>
-     
-        </tr>
-      %end
+        <tbody>
+          % for parkirisce in parkirisca:
+          <tr>
+            <td>{{parkirisce.id}}</td>
+            <td>
+              <a href="/parkirisce/{{parkirisce.id}}">
+                {{parkirisce.lokacija}}
+              </a>
+
+            </td>
+            <td>{{parkirisce.dnevni_na_voljo}}</td>
+            <td>{{parkirisce.dnevni_zasedeni}}</td>
+            <td>
+              <a href="{{url('/dobi_parkirisca')}}">Uredi</a>
+            </td>
+          </tr>
+          % end
+        </tbody>
       </table>
-
-
-
-    </div>    
-
     </div>
-   
+  </div>
 </div>
+

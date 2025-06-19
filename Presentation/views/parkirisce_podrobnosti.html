@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+%rebase('osnova.html', naslov='Podrobnosti parkirišča', stran='parkirišča')
+
+<div>
+  <h2>Parkirišče: {{parkirisce.lokacija}}</h2>
+  <p><strong>ID:</strong> {{parkirisce.id}}</p>
+  <p><strong>Dnevni na voljo:</strong> {{parkirisce.dnevni_na_voljo}}</p>
+  <p><strong>Dnevni zasedeni:</strong> {{parkirisce.dnevni_zasedeni}}</p>
+
+  <h3>Seznam parkirnih mest</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Št. mesta</th>
+        <th>Zasedenost</th>
+        <th>Čas prihoda</th>
+        <th>Čas odhoda</th>
+        <th>Rezervacija</th>
+      </tr>
+    </thead>
+    <tbody>
+      % for i in range(1, parkirisce.dnevni_na_voljo + 1):
+      <tr>
+        <td>{{i}}</td>
+        <td>Ne</td>
+        <td></td>
+        <td></td>
+        <td>
+              <a href="{{url('/')}}">Rezervacija</a>
+        </td>
+      </tr>
+      % end
+    </tbody>
+  </table>
+
+  <a href="{{url('/')}}">Nazaj</a>
+</div>
+
