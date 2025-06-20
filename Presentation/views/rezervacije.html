@@ -10,6 +10,7 @@
         <thead>
             <tr>
                 <th>Uporabnik</th>
+                <th>Lokacija</th>
                 <th>Parkirno mesto</th>
                 <th>Registrska številka</th>
                 <th>Prihod</th>
@@ -20,6 +21,7 @@
             % for r in rezervacije:
             <tr>
                 <td>{{r.uporabnisko_ime}}</td>
+                <td>{{r.lokacija}}</td>
                 <td>{{r.id_parkirnega_mesta}}</td>
                 <td>{{r.registrska_stevilka}}</td>
                 <td>{{r.prihod}}</td>

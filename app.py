@@ -227,7 +227,14 @@ def prikazi_rezervacijo(mesto_id):
 
     rola = uporabnik['rola'] if uporabnik else None
 
-    return template_user('rezervacija.html', napaka = None, mesto_id=mesto_id)
+    # Dodaj prazne vrednosti za formo
+    return template_user('rezervacija.html',
+                         napaka=None,
+                         mesto_id=mesto_id,
+                         registrska_stevilka='',
+                         prihod='',
+                         odhod='')
+
 
 @post('/rezervacija/<mesto_id:int>')
 @cookie_required

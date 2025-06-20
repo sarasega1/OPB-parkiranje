@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 % rebase('osnova.html', naslov='Rezervacija parkirnega mesta', stran='rezervacija')
 
-<form action="/rezervacija/{{mesto_id}}" method="POST" style="width: 60%; margin-left: 5%;">
+<!DOCTYPE html>
+% rebase('osnova.html', naslov='Rezervacija parkirnega mesta', stran='rezervacija')
 
- 
+<form action="/rezervacija/{{mesto_id}}" method="POST" style="width: 60%; margin-left: 5%;">
 
   <div class="form-group">
     <label for="registracija">Registrska številka</label>
-    <input type="text" class="form-control" name="registracija" id="registracija" required>
+    <input type="text" class="form-control" name="registracija" id="registracija" value="{{registrska_stevilka or ''}}" required>
   </div>
 
   <div class="form-group">
     <label for="prihod">Čas prihoda</label>
-    <input type="datetime-local" class="form-control" name="prihod" id="prihod" required>
+    <input type="datetime-local" class="form-control" name="prihod" id="prihod" value="{{prihod or ''}}" required>
   </div>
 
   <div class="form-group">
     <label for="odh">Čas odhoda</label>
-    <input type="datetime-local" class="form-control" name="odh" id="odh" required>
+    <input type="datetime-local" class="form-control" name="odh" id="odh" value="{{odhod or ''}}" required>
   </div>
 
   <br>
@@ -25,13 +26,7 @@
 
   % if napaka:
   <p style="color:red;">Napaka: {{napaka}}</p>
-% end
-
-<form method="post">
-  Registrska številka: <input type="text" name="registrska_stevilka" value="{{registrska_stevilka or ''}}" required><br>
-  Prihod: <input type="datetime-local" name="prihod" value="{{prihod or ''}}" required><br>
-  Odhod: <input type="datetime-local" name="odh" value="{{odhod or ''}}" required><br>
-  <input type="submit" value="Rezerviraj">
-</form>
+  % end
 
 </form>
+
