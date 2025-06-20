@@ -22,16 +22,14 @@
     </thead>
     <tbody>
       % for i in range(1, parkirisce.dnevni_na_voljo + 1):
-      <tr>
-        <td>{{i}}</td>
-        <td>Ne</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        <td></td>
-        
-      </tr>
-      % end
+          <tr>
+            <td>{{parkirisce.id}}{{i}}</td>
+            <td>Ne</td>
+            <td></td>
+            <td></td>
+            <td><a href="/rezervacija/{{i}}">Rezervacija</a></td>
+          </tr>
+          % end
     </tbody>
   </table>
 
