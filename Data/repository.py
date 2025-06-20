@@ -22,7 +22,7 @@ class Repo:
     
     def dobi_osebo(self) -> List[Oseba]:               
         self.cur.execute("""
-            SELECT ime, priimek, uporabnisko_ime, geslo, telefonska_stevilka, registrska_stevilka, trr
+            SELECT ime, priimek, uporabnisko_ime, telefonska_stevilka
             FROM  osebe
         
         """)
@@ -32,7 +32,7 @@ class Repo:
         return osebe  
     def dobi_oseboDto(self) -> List[Oseba]:               
         self.cur.execute("""
-            SELECT ime, priimek, uporabnisko_ime, telefonska_stevilka, registrska_stevilka, trr
+            SELECT ime, priimek, uporabnisko_ime, telefonska_stevilka
             FROM  osebe
         
         """)
