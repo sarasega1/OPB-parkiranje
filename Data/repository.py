@@ -159,8 +159,56 @@ class Repo:
   
 
 
+    def dobi_rezervacije(self) -> List[Rezervacija]:
+            self.cur.execute("""
+                SELECT r.*, p.lokacija
+                FROM rezervacija r
+                JOIN parkirisca p ON r.id_parkirnega_mesta = p.id
+            """)
+            rows = self.cur.fetchall()
+            rezervacije = []
+            for t in rows:
+                prihod = t['prihod']
+                odhod = t['odhod']
+                if isinstance(prihod, time):
+                    prihod = datetime.combine(datetime.today(), prihod)
+                if isinstance(odhod, time):
+                    odhod = datetime.combine(datetime.today(), odhod)
+                
+                r = Rezervacija(
+                    id_parkirnega_mesta=t['id_parkirnega_mesta'],
+                    lokacija=t['lokacija'],
+                    prihod=prihod,
+                    odhod=odhod,
+                    uporabnisko_ime=t['uporabnisko_ime'],
+                    registrska_stevilka=t['registrska_stevilka']
+                )
+                rezervacije.append(r)
+            return rezervacije
 
-      
+
+
+
+
+    
+def dodaj_rezervacijo(self, rezervacija: Rezervacija):
+    cursor = self.conn.cursor()
+    sql = """
+    INSERT INTO rezervacija (lokacija, id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod)
+    VALUES (%s, %s, %s, %s, %s, %s)
+    """
+    cursor.execute(sql, (
+        rezervacija.lokacija,
+        rezervacija.id_parkirnega_mesta,
+        rezervacija.uporabnisko_ime,
+        rezervacija.registrska_stevilka,
+        rezervacija.prihod,
+        rezervacija.odhod
+    ))
+    self.conn.commit()
+    cursor.close()
+
+
 
 
     # def dobi_parkiriscaDto(self) -> List[ParkirisceDto]:               

@@ -240,7 +240,6 @@ def prikazi_rezervacijo(mesto_id):
                          prihod='',
                          odhod='')
 
-
 @post('/rezervacija/<mesto_id:int>')
 @cookie_required
 def rezervacija_post(mesto_id):
@@ -250,13 +249,21 @@ def rezervacija_post(mesto_id):
 
     registrska_stevilka = request.forms.get('registracija')
     prihod = request.forms.get('prihod')
-    odhod = request.forms.get('odh')
+    odhod = request.forms.get('odhod')  # preveri to ime!
+
+    print(f"Prihod: {prihod} (type: {type(prihod)})")
+    print(f"Odhod: {odhod} (type: {type(odhod)})")
+
+    lokacija = "nekaj"  # pravilno nastavi lokacijo
+
+    if not prihod or not odhod:
+        return template_user('rezervacija.html', mesto_id=mesto_id, napaka="Prihod ali odhod nista vnešena.",
+                             registrska_stevilka=registrska_stevilka, prihod=prihod, odhod=odhod)
 
     try:
-        service.naredi_rezervacijo(mesto_id, uporabnisko_ime, registrska_stevilka, prihod, odhod)
+        service.naredi_rezervacijo(lokacija, mesto_id, uporabnisko_ime, registrska_stevilka, prihod, odhod)
     except ValueError as e:
-        # Pokažeš formo z napako in obstoječimi podatki
-        return template_user('rezervacija.html', mesto_id=mesto_id, napaka=str(e), 
+        return template_user('rezervacija.html', mesto_id=mesto_id, napaka=str(e),
                              registrska_stevilka=registrska_stevilka, prihod=prihod, odhod=odhod)
 
     return template_user("rezervacija_uspesna.html", sporocilo="Rezervacija uspešna!")
@@ -286,3 +293,6 @@ def vse_rezervacije():
 if __name__ == "__main__":
    
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
+
+
+

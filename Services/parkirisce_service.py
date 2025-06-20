@@ -25,7 +25,7 @@ class ParkirisceService:
     def dobi_parkirisce(self, id: int) -> Parkirisce:
         return self.repo.dobi_parkirisce(id)
 
-    def naredi_rezervacijo(self, mesto_id: int, uporabnisko_ime: str, registrska_stevilka: str, prihod_str: str, odhod_str: str) -> None:
+    def naredi_rezervacijo(self, lokacija: str,  mesto_id: int, uporabnisko_ime: str, registrska_stevilka: str, prihod_str: str, odhod_str: str) -> None:
         prihod = datetime.strptime(prihod_str, "%Y-%m-%dT%H:%M")
         odhod = datetime.strptime(odhod_str, "%Y-%m-%dT%H:%M")
         sedaj = datetime.now()
@@ -37,6 +37,7 @@ class ParkirisceService:
             raise ValueError("Odhod mora biti kasneje od prihoda!")
 
         rezervacija = Rezervacija(
+            lokacija = lokacija,
             id_parkirnega_mesta=mesto_id,
             uporabnisko_ime=uporabnisko_ime,
             registrska_stevilka=registrska_stevilka,
