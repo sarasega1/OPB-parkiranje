@@ -25,29 +25,28 @@ class ParkirisceService:
     def dobi_parkirisce(self, id: int) -> Parkirisce:
         return self.repo.dobi_parkirisce(id)
 
-   
-    def dobi_rezervacije(self) -> List[Rezervacija]:               
-        return self.repo.dobi_rezervacije()
+    def naredi_rezervacijo(self, mesto_id: int, uporabnisko_ime: str, registrska_stevilka: str, prihod_str: str, odhod_str: str) -> None:
+        prihod = datetime.strptime(prihod_str, "%Y-%m-%dT%H:%M")
+        odhod = datetime.strptime(odhod_str, "%Y-%m-%dT%H:%M")
+        sedaj = datetime.now()
 
-    def naredi_rezervacijo(self, mesto_id: int, ime: str, priimek: str, registracija: str, prihod: str, odhod: str) -> None:
-        prihod_dt = datetime.strptime(prihod, "%Y-%m-%dT%H:%M")
-        odhod_dt = datetime.strptime(odhod, "%Y-%m-%dT%H:%M")
+        if prihod < sedaj:
+            raise ValueError("Prihod ne sme biti v preteklosti!")
+
+        if odhod <= prihod:
+            raise ValueError("Odhod mora biti kasneje od prihoda!")
+
         rezervacija = Rezervacija(
             id_parkirnega_mesta=mesto_id,
-            ime=ime,
-            priimek=priimek,
-            registracija=registracija,
-            prihod=prihod_dt,
-            odhod=odhod_dt
-    )
+            uporabnisko_ime=uporabnisko_ime,
+            registrska_stevilka=registrska_stevilka,
+            prihod=prihod,
+            odhod=odhod
+        )
         self.repo.dodaj_rezervacijo(rezervacija)
-    def dobi_vse_rezervacije(self):
-        cursor = self.conn.cursor()
-        sql = "SELECT * FROM rezervacija"
-        cursor.execute(sql)
-        rezervacije = cursor.fetchall()
-        cursor.close()
-        return rezervacije
+
+    def dobi_rezervacije(self):
+        return self.repo.dobi_rezervacije()
 
     def obstaja_oseba(self, uporabnisko_ime: str) -> bool:
         # Preveri, če oseba obstaja (uporabniško ime je edinstveno)

@@ -1,9 +1,8 @@
 import psycopg2, psycopg2.extensions, psycopg2.extras
 psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
 import Data.auth_public as auth
-import datetime
 import os
-
+from datetime import datetime, time
 
 from Data.models import Parkirisce, Oseba, ParkirisceDto, Uporabnik, Parkirno_mesto, Rezervacija
 from typing import List
@@ -88,33 +87,50 @@ class Repo:
         """, (uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo))
         self.conn.commit()
 
-    def dobi_rezervacije(self) -> List[Rezervacija]:               
-            self.cur.execute("""
-                SELECT id, uporabnisko_ime, registrska_stevilka, prihod, odhod
-                FROM reuervacija
-            
-            """)
-            
-            # rezultate querya pretovrimo v python seznam objektov (transkacij)
-            rezervacije = [Rezervacija.from_dict(t) for t in self.cur.fetchall()]
-            return rezervacije
+   
+    def dobi_rezervacije(self) -> List[Rezervacija]:
+        self.cur.execute("SELECT * FROM rezervacija")
+        rows = self.cur.fetchall()
+        rezervacije = []
+        for t in rows:
+            prihod = t['prihod']
+            odhod = t['odhod']
+            # če je čas brez datuma, dodaj datum
+            if isinstance(prihod, time):
+                prihod = datetime.combine(datetime.today(), prihod)
+            if isinstance(odhod, time):
+                odhod = datetime.combine(datetime.today(), odhod)
 
-    def dodaj_rezervacijo(self, rezervacija: Rezervacija) -> None:
+            r = Rezervacija(  
+                id_parkirnega_mesta=t['id_parkirnega_mesta'],
+                lokacija=t.get('lokacija', ''),
+                prihod=prihod,
+                odhod=odhod,
+                uporabnisko_ime=t['uporabnisko_ime'],
+                registrska_stevilka=t['registrska_stevilka']
+            )
+            rezervacije.append(r)
+        return rezervacije
+
+
+
+    
+    def dodaj_rezervacijo(self, rezervacija: Rezervacija):
+        cursor = self.conn.cursor()  # self.conn je povezava do baze, ki jo ima repo
         sql = """
-        INSERT INTO rezervacija (id_parkirnega_mesta, ime, priimek, registrska_stevilka, prihod, odhod)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        INSERT INTO rezervacija (id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod)
+        VALUES (%s, %s, %s, %s, %s)
         """
-        cursor = self.conn.cursor()
         cursor.execute(sql, (
             rezervacija.id_parkirnega_mesta,
-            rezervacija.ime,
-            rezervacija.priimek,
-            rezervacija.registracija,
+            rezervacija.uporabnisko_ime,
+            rezervacija.registrska_stevilka,
             rezervacija.prihod,
             rezervacija.odhod
         ))
         self.conn.commit()
         cursor.close()
+
 
     def dodaj_uporabnika(self, uporabnik: Uporabnik):
         self.cur.execute("""
@@ -140,16 +156,7 @@ class Repo:
             """, (uporabnik.last_login,uporabnik.username))
         self.conn.commit()
 
-    def dodaj_rezervacijo(self, rezervacija):
-        try:
-            self.cur.execute("""
-                INSERT INTO rezervacija (id_parkirnega_mesta, ime, priimek, registracija, prihod, odhod)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            """, (rezervacija.id_parkirnega_mesta, rezervacija.ime, rezervacija.priimek, rezervacija.registracija, rezervacija.prihod, rezervacija.odhod))
-            self.conn.commit()
-        except Exception as e:
-            self.conn.rollback()
-            raise e
+  
 
 
 

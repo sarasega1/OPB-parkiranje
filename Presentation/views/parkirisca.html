@@ -4,9 +4,7 @@
 <div>
   <h2>Seznam vseh parkirišč</h2>
 
-  <a href="{{url('/dobi_parkirisca')}}" class="btn btn-light">
-    Dodaj novo transakcijo
-  </a>
+
 
   <br><br>
 
@@ -19,7 +17,6 @@
             <th>Lokacija</th>
             <th>Dnevni na voljo</th>
             <th>Dnevni zasedeni</th>
-            <th>Uredi</th>
           </tr>
         </thead>
         <tbody>
@@ -34,9 +31,6 @@
             </td>
             <td>{{parkirisce.dnevni_na_voljo}}</td>
             <td>{{parkirisce.dnevni_zasedeni}}</td>
-            <td>
-              <a href="{{url('/dobi_parkirisca')}}">Uredi</a>
-            </td>
           </tr>
           % end
         </tbody>
@@ -44,4 +38,3 @@
     </div>
   </div>
 </div>
-

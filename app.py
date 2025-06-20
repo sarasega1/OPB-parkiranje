@@ -227,16 +227,12 @@ def prikazi_rezervacijo(mesto_id):
 
     rola = uporabnik['rola'] if uporabnik else None
 
-    return template_user('rezervacija.html', mesto_id=mesto_id)
+    return template_user('rezervacija.html', napaka = None, mesto_id=mesto_id)
 
 @post('/rezervacija/<mesto_id:int>')
 @cookie_required
 def rezervacija_post(mesto_id):
-    s = request.environ.get('beaker.session')
-    if not s:
-        return redirect(url('/prijava'))
-
-    uporabnisko_ime = s.get('uporabnisko_ime')
+    uporabnisko_ime = request.get_cookie("uporabnik")
     if not uporabnisko_ime:
         return redirect(url('/prijava'))
 
@@ -244,9 +240,14 @@ def rezervacija_post(mesto_id):
     prihod = request.forms.get('prihod')
     odhod = request.forms.get('odh')
 
-    service.naredi_rezervacijo(mesto_id, uporabnisko_ime, registrska_stevilka, prihod, odhod)
+    try:
+        service.naredi_rezervacijo(mesto_id, uporabnisko_ime, registrska_stevilka, prihod, odhod)
+    except ValueError as e:
+        # Pokažeš formo z napako in obstoječimi podatki
+        return template_user('rezervacija.html', mesto_id=mesto_id, napaka=str(e), 
+                             registrska_stevilka=registrska_stevilka, prihod=prihod, odhod=odhod)
 
-    return template("rezervacija_uspesna.html", sporocilo="Rezervacija uspešna!")
+    return template_user("rezervacija_uspesna.html", sporocilo="Rezervacija uspešna!")
 
 
 def dodaj_rezervacijo(id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod):
@@ -265,8 +266,8 @@ def dodaj_rezervacijo(id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka,
 @admin_required
 @cookie_required
 def vse_rezervacije():
-    rezervacije = service.dobi_vse_rezervacije()
-    return template_user('rezervacije.html', rezervacije=rezervacije, stran = 'rezervacije')
+    rezervacije = service.dobi_rezervacije()
+    return template_user('rezervacije.html', rezervacije=rezervacije, napaka = None, stran = 'rezervacije')
 
 
 

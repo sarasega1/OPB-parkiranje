@@ -125,3 +125,15 @@ def prikazi_rezervacijo(mesto_id):
     <label for="priimek">Priimek</label>
     <input type="text" class="form-control" name="priimek" id="priimek" required>
   </div>
+
+  @dataclass
+class Rezervacija:
+    id_parkirnega_mesta: int = field(default=0)
+    lokacija: str = field(default="")
+    prihod: datetime = field(default= datetime.now())
+    odhod: datetime = field(default= datetime.now())
+    uporabnisko_ime: str = field(default="")
+
+    ime: str = field(default="")
+    priimek: str = field(default="")
+    registrska_stevilka: str = field(default="")  

@@ -9,10 +9,8 @@
     <table border="1">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>Uporabnik</th>
                 <th>Parkirno mesto</th>
-                <th>Ime</th>
-                <th>Priimek</th>
                 <th>Registrska številka</th>
                 <th>Prihod</th>
                 <th>Odhod</th>
@@ -21,11 +19,9 @@
         <tbody>
             % for r in rezervacije:
             <tr>
-                <td>{{r.id}}</td>
+                <td>{{r.uporabnisko_ime}}</td>
                 <td>{{r.id_parkirnega_mesta}}</td>
-                <td>{{r.ime}}</td>
-                <td>{{r.priimek}}</td>
-                <td>{{r.registracija}}</td>
+                <td>{{r.registrska_stevilka}}</td>
                 <td>{{r.prihod}}</td>
                 <td>{{r.odhod}}</td>
             </tr>

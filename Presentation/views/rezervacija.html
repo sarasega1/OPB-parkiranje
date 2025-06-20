@@ -22,4 +22,16 @@
 
   <br>
   <button type="submit" class="btn btn-primary">Rezerviraj parkirno mesto</button>
+
+  % if napaka:
+  <p style="color:red;">Napaka: {{napaka}}</p>
+% end
+
+<form method="post">
+  Registrska številka: <input type="text" name="registrska_stevilka" value="{{registrska_stevilka or ''}}" required><br>
+  Prihod: <input type="datetime-local" name="prihod" value="{{prihod or ''}}" required><br>
+  Odhod: <input type="datetime-local" name="odh" value="{{odhod or ''}}" required><br>
+  <input type="submit" value="Rezerviraj">
+</form>
+
 </form>
