@@ -11,6 +11,11 @@ import os
 #python -m venv venv 
 # Aktiviramo okolje z venv\Scripts\activate (windows) ali source venv/bin/activate (macos)
 # pip install -r requirements.txt 
+
+#SELECT pg_terminate_backend(pid)
+#FROM pg_stat_activity
+#WHERE wait_event_type = 'Lock'
+ # AND query LIKE '%osebe%';
 service = ParkirisceService()
 auth = AuthService()
 

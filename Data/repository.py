@@ -83,7 +83,7 @@ class Repo:
     def dodaj_osebo(self, uporabnisko_ime: str, ime: str, priimek: str, telefonska_stevilka: str, geslo: str) -> None:
         self.cur.execute("""
             INSERT INTO osebe (uporabnisko_ime, ime, priimek, telefonska_stevilka)
-            VALUES (%s, %s, %s, %s, %s)
+            VALUES (%s, %s, %s, %s)
         """, (uporabnisko_ime, ime, priimek, telefonska_stevilka))
         self.conn.commit()
 
