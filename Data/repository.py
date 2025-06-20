@@ -116,20 +116,23 @@ class Repo:
 
     
     def dodaj_rezervacijo(self, rezervacija: Rezervacija):
-        cursor = self.conn.cursor()  # self.conn je povezava do baze, ki jo ima repo
+        cursor = self.conn.cursor()
         sql = """
-        INSERT INTO rezervacija (id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod)
-        VALUES (%s, %s, %s, %s, %s)
+        INSERT INTO rezervacija 
+        (id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod, lokacija)
+        VALUES (%s, %s, %s, %s, %s, %s)
         """
         cursor.execute(sql, (
             rezervacija.id_parkirnega_mesta,
             rezervacija.uporabnisko_ime,
             rezervacija.registrska_stevilka,
             rezervacija.prihod,
-            rezervacija.odhod
+            rezervacija.odhod,
+            rezervacija.lokacija   # <----- TUKAJ dodaj lokacijo
         ))
         self.conn.commit()
         cursor.close()
+
 
 
     def dodaj_uporabnika(self, uporabnik: Uporabnik):
