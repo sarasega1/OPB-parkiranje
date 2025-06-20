@@ -4,8 +4,7 @@ from Services.auth_service import AuthService
 from Services.parkirisce_service import ParkirisceService
 #from Services.auth_service import AuthService
 import os
-from beaker.middleware import SessionMiddleware
-from bottle import Bottle 
+
 # Ustvarimo instance servisov, ki jih potrebujemo. 
 # Če je število servisov veliko, potem je service bolj smiselno inicializirati v metodi in na
 # začetku datoteke (saj ne rabimo vseh servisov v vseh metodah!)
@@ -33,7 +32,7 @@ def cookie_required(f):
         
     return decorated
 
-@app.get('/static/<filename:path>')
+@get('/static/<filename:path>')
 def static(filename):
     return static_file(filename, root='Presentation/static')
 
@@ -85,6 +84,55 @@ def osebe_view():
     osebe = service.dobi_oseboDto()
     print(osebe)
     return template_user('osebe.html', osebe=osebe, stran='osebe')
+
+@post('/registracija')
+def registracija_post():
+    uporabnisko_ime = request.forms.get('username')
+    geslo = request.forms.get('password')
+    telefonska_stevilka = request.forms.get('telefonska_stevilka')
+    ime = request.forms.get('ime')
+    priimek = request.forms.get('priimek')
+    vloga = 'uporabnik'  # Vedno uporabnik, admin ne sme izbirati!
+
+    # Preverimo, če obstaja uporabnik v bazi uporabnikov
+    if auth.obstaja_uporabnik(uporabnisko_ime):
+        return template("registracija.html", napaka="Uporabnik že obstaja. Prosim prijavite se.")
+
+    # Preverimo, če obstaja oseba v bazi oseb
+    if service.obstaja_oseba(uporabnisko_ime):
+        return template("registracija.html", napaka="Uporabniško ime je že zasedeno. Prosim prijavite se.")
+
+    # Preverimo, če so polja prazna
+    if not uporabnisko_ime or not geslo or not ime or not priimek:
+        return template("registracija.html", napaka="Vsa polja so obvezna.")
+
+    # Dodamo osebo v bazo oseb
+    service.dodaj_osebo(
+        uporabnisko_ime=uporabnisko_ime,
+        ime=ime,
+        priimek=priimek,
+        telefonska_stevilka=telefonska_stevilka,
+        geslo=geslo
+    )
+
+    # Dodamo uporabnika v bazo uporabnikov z vlogo 'uporabnik'
+    auth.dodaj_uporabnika(uporabnisko_ime, vloga, geslo)
+
+    # Nastavimo piškotke in redirect na domačo stran
+    response.set_cookie("uporabnik", uporabnisko_ime)
+    response.set_cookie("rola", vloga)
+    redirect(url('/'))
+
+
+
+
+@get('/registracija')
+def registracija_get():
+    rola = request.get_cookie("rola")
+    uporabnik = request.get_cookie("uporabnik")
+    return template("registracija.html", napaka=None, rola=rola, uporabnik=uporabnik)
+
+
 
 
 
@@ -161,29 +209,8 @@ def podrobnosti_parkirisca(id):
  # Dokler nimate razvitega vmesnika za dodajanje uporabnikov, jih dodajte kar ročno.
 #auth.dodaj_uporabnika('gasper', 'admin', 'gasper')
 
-app = Bottle()
-session_opts = {
-    'session.type': 'cookie',
-    'session.validate_key': 'skrivnikey'
-}
-app = SessionMiddleware(Bottle(), session_opts)
 
-@post('/rezervacija/<mesto_id:int>')
-def rezervacija_post(mesto_id):
-    s = request.environ.get('beaker.session')
-    if s is None:
-        return redirect(url('/prijava'))  # ali ustrezno ravnanje
 
-    ime = s.get('ime')
-    priimek = s.get('priimek')
-
-    registracija = request.forms.get('registracija')
-    prihod = request.forms.get('prihod')
-    odhod = request.forms.get('odh')
-
-    service.naredi_rezervacijo(mesto_id, ime, priimek, registracija, prihod, odhod)
-
-    return redirect(url('/rezervacija'))
 
 @get('/rezervacija/<mesto_id:int>')
 def prikazi_rezervacijo(mesto_id):
@@ -202,21 +229,8 @@ def prikazi_rezervacijo(mesto_id):
 
     return template_user('rezervacija.html', mesto_id=mesto_id)
 
-
-
-def dodaj_rezervacijo(id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod):
-    conn = AuthService
-    cursor = conn.cursor()
-    sql = """
-    INSERT INTO rezervacija (id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod)
-    VALUES (%s, %s, %s, %s, %s)
-    """
-    cursor.execute(sql, (id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod))
-    conn.commit()
-    cursor.close()
-    conn.close()
-
 @post('/rezervacija/<mesto_id:int>')
+@cookie_required
 def rezervacija_post(mesto_id):
     s = request.environ.get('beaker.session')
     if not s:
@@ -232,15 +246,30 @@ def rezervacija_post(mesto_id):
 
     service.naredi_rezervacijo(mesto_id, uporabnisko_ime, registrska_stevilka, prihod, odhod)
 
-    # Prikaži stran z obvestilom o uspehu, namesto redirecta
     return template("rezervacija_uspesna.html", sporocilo="Rezervacija uspešna!")
+
+
+def dodaj_rezervacijo(id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod):
+    conn = AuthService
+    cursor = conn.cursor()
+    sql = """
+    INSERT INTO rezervacija (id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod)
+    VALUES (%s, %s, %s, %s, %s)
+    """
+    cursor.execute(sql, (id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+@get('/rezervacije')
+@admin_required
+@cookie_required
+def vse_rezervacije():
+    rezervacije = service.dobi_vse_rezervacije()
+    return template_user('rezervacije.html', rezervacije=rezervacije, stran = 'rezervacije')
 
 
 
 if __name__ == "__main__":
    
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
-
-
-
-

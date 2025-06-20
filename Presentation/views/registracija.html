@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+%rebase('osnova.html', naslov='Registracija', stran='registracija')
+
+<form action="/registracija" method="POST" style="width:60%">
+    <div class="form-group">
+      <label for="username">Uporabniško ime</label>
+      <input type="text" class="form-control" id="username" name="username" placeholder="Vnesi uporabniško ime" required>
+    </div>
+    <div class="form-group">
+      <label for="password">Geslo</label>
+      <input type="password" class="form-control" id="password" name="password" placeholder="Vnesi geslo" required>
+    </div>
+    <div class="form-group">
+      <label for="telefonska_stevilka">Telefonska številka</label>
+      <input type="text" class="form-control" id="telefonska_stevilka" name="telefonska_stevilka" placeholder="Vnesi telefonsko številko">
+    </div>
+    <div class="form-group">
+      <label for="ime">Ime</label>
+      <input type="text" class="form-control" id="ime" name="ime" placeholder="Vnesi ime" required>
+    </div>
+    <div class="form-group">
+      <label for="priimek">Priimek</label>
+      <input type="text" class="form-control" id="priimek" name="priimek" placeholder="Vnesi priimek" required>
+    </div>
+    <!-- Vloga bo vedno uporabnik, zato skrito polje -->
+    <input type="hidden" name="vloga" value="uporabnik">
+    <button type="submit" class="btn btn-primary">Registracija</button>
+</form>
+
+%if napaka:
+<div class="alert alert-danger mt-3" role="alert">
+  {{napaka}}
+</div>
+%end

@@ -74,7 +74,19 @@ class Repo:
         if row:
           return Parkirisce.from_dict(row)
         return None
+    def obstaja_oseba(self, uporabnisko_ime: str) -> bool:
+        self.cur.execute("""
+            SELECT COUNT(*) FROM osebe WHERE uporabnisko_ime = %s
+        """, (uporabnisko_ime,))
+        count = self.cur.fetchone()[0]
+        return count > 0
 
+    def dodaj_osebo(self, uporabnisko_ime: str, ime: str, priimek: str, telefonska_stevilka: str, geslo: str) -> None:
+        self.cur.execute("""
+            INSERT INTO osebe (uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo)
+            VALUES (%s, %s, %s, %s, %s)
+        """, (uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo))
+        self.conn.commit()
 
     def dobi_rezervacije(self) -> List[Rezervacija]:               
             self.cur.execute("""
@@ -87,6 +99,22 @@ class Repo:
             rezervacije = [Rezervacija.from_dict(t) for t in self.cur.fetchall()]
             return rezervacije
 
+    def dodaj_rezervacijo(self, rezervacija: Rezervacija) -> None:
+        sql = """
+        INSERT INTO rezervacija (id_parkirnega_mesta, ime, priimek, registrska_stevilka, prihod, odhod)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor = self.conn.cursor()
+        cursor.execute(sql, (
+            rezervacija.id_parkirnega_mesta,
+            rezervacija.ime,
+            rezervacija.priimek,
+            rezervacija.registracija,
+            rezervacija.prihod,
+            rezervacija.odhod
+        ))
+        self.conn.commit()
+        cursor.close()
 
     def dodaj_uporabnika(self, uporabnik: Uporabnik):
         self.cur.execute("""
@@ -152,5 +180,3 @@ if __name__ == "__main__":
 
     for p in osebe:
          print(p)
-
-  

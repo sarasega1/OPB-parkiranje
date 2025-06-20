@@ -41,7 +41,23 @@ class ParkirisceService:
             odhod=odhod_dt
     )
         self.repo.dodaj_rezervacijo(rezervacija)
+    def dobi_vse_rezervacije(self):
+        cursor = self.conn.cursor()
+        sql = "SELECT * FROM rezervacija"
+        cursor.execute(sql)
+        rezervacije = cursor.fetchall()
+        cursor.close()
+        return rezervacije
 
+    def obstaja_oseba(self, uporabnisko_ime: str) -> bool:
+        # Preveri, če oseba obstaja (uporabniško ime je edinstveno)
+        return self.repo.obstaja_oseba(uporabnisko_ime)
+
+    
+
+
+    def dodaj_osebo(self, uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo):
+        self.repo.dodaj_osebo(uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo)
 
     # Vrne vsa parkirna mesta za določeno parkirišče
     def dobi_parkirna_mesta(self, parkirisce_id: int) -> List[Parkirno_mesto]:
@@ -56,3 +72,4 @@ class ParkirisceService:
 
 
         
+

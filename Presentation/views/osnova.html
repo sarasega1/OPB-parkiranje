@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,6 +12,9 @@
     <title>{{naslov}}</title>  
 </head>
 <body> 
+    % rola = rola if 'rola' in globals() else ''
+    % uporabnik = uporabnik if 'uporabnik' in globals() else ''
+    % stran = stran if 'stran' in globals() else ''
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="navbar-nav">   
         % if rola == 'admin':    
@@ -25,7 +30,11 @@
         % else:
             <a class="nav-link" href="{{url('/dobi_parkirisca')}}">Parkirišča</a>
         % end  
-
+        % if stran=='rezervacije':
+            <a class="nav-link active" href="{{url('/rezervacije')}}">Rezervacije</a>
+        % else:
+            <a class="nav-link" href="{{url('/rezervacije')}}">Rezervacije</a>
+        % end      
         </div>
 
         <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
@@ -48,8 +57,4 @@
     </div>
 </body>
 </html>
-
-
-
-
 

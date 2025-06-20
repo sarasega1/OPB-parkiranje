@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Seznam rezervacij</title>
+</head>
+<body>
+    <h1>Rezervacije</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Parkirno mesto</th>
+                <th>Ime</th>
+                <th>Priimek</th>
+                <th>Registrska številka</th>
+                <th>Prihod</th>
+                <th>Odhod</th>
+            </tr>
+        </thead>
+        <tbody>
+            % for r in rezervacije:
+            <tr>
+                <td>{{r.id}}</td>
+                <td>{{r.id_parkirnega_mesta}}</td>
+                <td>{{r.ime}}</td>
+                <td>{{r.priimek}}</td>
+                <td>{{r.registracija}}</td>
+                <td>{{r.prihod}}</td>
+                <td>{{r.odhod}}</td>
+            </tr>
+            % end
+        </tbody>
+    </table>
+</body>
+</html>
+
+
