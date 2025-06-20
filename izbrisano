@@ -92,3 +92,36 @@ f dodaj_transakcijo(self, t : transakcija):
             VALUES (%s, %s, %s, %s)
             """, (t.znesek, t.racun, t.cas, t.opis))
         self.conn.commit(
+            
+
+
+@post('/rezervacija/<mesto_id:int>')
+def rezervacija_post(mesto_id):
+    ime = request.forms.get('ime')
+    priimek = request.forms.get('priimek')
+    registracija = request.forms.get('registracija')
+    prihod = request.forms.get('prihod')
+    odhod = request.forms.get('odh')
+
+    service.naredi_rezervacijo(mesto_id, ime, priimek, registracija, prihod, odhod)
+    return redirect(url('/parkirisce/1'))
+
+
+@get('/rezervacija/<mesto_id:int>')
+def prikazi_rezervacijo(mesto_id):
+    # pridobi uporabnikovo vlogo iz seje ali druge logike
+    rola = 'admin'  # ali 'uporabnik', ali None
+    uporabnik = None 
+    return template('rezervacija.html', mesto_id=mesto_id, rola=rola, uporabnik=uporabnik)
+
+
+
+ <div class="form-group">
+    <label for="ime">Ime</label>
+    <input type="text" class="form-control" name="ime" id="ime" required>
+  </div>
+
+  <div class="form-group">
+    <label for="priimek">Priimek</label>
+    <input type="text" class="form-control" name="priimek" id="priimek" required>
+  </div>

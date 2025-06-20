@@ -4,11 +4,14 @@ from Services.auth_service import AuthService
 from Services.parkirisce_service import ParkirisceService
 #from Services.auth_service import AuthService
 import os
-
+from beaker.middleware import SessionMiddleware
+from bottle import Bottle 
 # Ustvarimo instance servisov, ki jih potrebujemo. 
 # Če je število servisov veliko, potem je service bolj smiselno inicializirati v metodi in na
 # začetku datoteke (saj ne rabimo vseh servisov v vseh metodah!)
-
+#python -m venv venv 
+# Aktiviramo okolje z venv\Scripts\activate (windows) ali source venv/bin/activate (macos)
+# pip install -r requirements.txt 
 service = ParkirisceService()
 auth = AuthService()
 
@@ -30,7 +33,7 @@ def cookie_required(f):
         
     return decorated
 
-@get('/static/<filename:path>')
+@app.get('/static/<filename:path>')
 def static(filename):
     return static_file(filename, root='Presentation/static')
 
@@ -114,7 +117,7 @@ def prijava():
         return template("prijava.html", uporabnik=None, rola=None, napaka="Neuspešna prijava. Napačno geslo ali uporabniško ime.")
 @get('/prijava')
 def prijava_get():
-    return template("prijava.html", napaka=None)
+    return template("prijava.html", napaka=None, rola = None)
 
 @get('/odjava')
 def odjava():
@@ -158,26 +161,80 @@ def podrobnosti_parkirisca(id):
  # Dokler nimate razvitega vmesnika za dodajanje uporabnikov, jih dodajte kar ročno.
 #auth.dodaj_uporabnika('gasper', 'admin', 'gasper')
 
-
+app = Bottle()
+session_opts = {
+    'session.type': 'cookie',
+    'session.validate_key': 'skrivnikey'
+}
+app = SessionMiddleware(Bottle(), session_opts)
 
 @post('/rezervacija/<mesto_id:int>')
 def rezervacija_post(mesto_id):
-    ime = request.forms.get('ime')
-    priimek = request.forms.get('priimek')
+    s = request.environ.get('beaker.session')
+    if s is None:
+        return redirect(url('/prijava'))  # ali ustrezno ravnanje
+
+    ime = s.get('ime')
+    priimek = s.get('priimek')
+
     registracija = request.forms.get('registracija')
     prihod = request.forms.get('prihod')
     odhod = request.forms.get('odh')
 
     service.naredi_rezervacijo(mesto_id, ime, priimek, registracija, prihod, odhod)
-    return redirect(url('/parkirisce/1'))
 
+    return redirect(url('/rezervacija'))
 
 @get('/rezervacija/<mesto_id:int>')
 def prikazi_rezervacijo(mesto_id):
-    # pridobi uporabnikovo vlogo iz seje ali druge logike
-    rola = 'admin'  # ali 'uporabnik', ali None
-    uporabnik = None 
-    return template('rezervacija.html', mesto_id=mesto_id, rola=rola, uporabnik=uporabnik)
+    s = request.environ.get('beaker.session')
+    if s:
+        uporabnik = {
+            'ime': s.get('ime'),
+            'priimek': s.get('priimek'),
+            'uporabnisko_ime': s.get('uporabnisko_ime'),
+            'rola': s.get('rola')
+        } if s.get('ime') else None
+    else:
+        uporabnik = None
+
+    rola = uporabnik['rola'] if uporabnik else None
+
+    return template_user('rezervacija.html', mesto_id=mesto_id)
+
+
+
+def dodaj_rezervacijo(id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod):
+    conn = AuthService
+    cursor = conn.cursor()
+    sql = """
+    INSERT INTO rezervacija (id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod)
+    VALUES (%s, %s, %s, %s, %s)
+    """
+    cursor.execute(sql, (id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod))
+    conn.commit()
+    cursor.close()
+    conn.close()
+
+@post('/rezervacija/<mesto_id:int>')
+def rezervacija_post(mesto_id):
+    s = request.environ.get('beaker.session')
+    if not s:
+        return redirect(url('/prijava'))
+
+    uporabnisko_ime = s.get('uporabnisko_ime')
+    if not uporabnisko_ime:
+        return redirect(url('/prijava'))
+
+    registrska_stevilka = request.forms.get('registracija')
+    prihod = request.forms.get('prihod')
+    odhod = request.forms.get('odh')
+
+    service.naredi_rezervacijo(mesto_id, uporabnisko_ime, registrska_stevilka, prihod, odhod)
+
+    # Prikaži stran z obvestilom o uspehu, namesto redirecta
+    return template("rezervacija_uspesna.html", sporocilo="Rezervacija uspešna!")
+
 
 
 if __name__ == "__main__":
