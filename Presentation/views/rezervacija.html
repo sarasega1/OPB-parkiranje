@@ -3,6 +3,9 @@
 
 <form action="/rezervacija/{{mesto_id}}" method="POST" style="width: 60%; margin-left: 5%;">
   <input type="hidden" name="mesto_id" value="{{mesto_id}}">
+  <input type="hidden" name="lokacija" value="{{lokacija}}">
+
+
   <div class="form-group">
     <label for="registrska_stevilka">Registrska številka</label>
     <input type="text" class="form-control" name="registrska_stevilka" id="registracija" value="{{registrska_stevilka or ''}}" required>
@@ -24,7 +27,4 @@
   % if napaka:
   <p style="color:red;">Napaka: {{napaka}}</p>
   % end
-
 </form>
-
-

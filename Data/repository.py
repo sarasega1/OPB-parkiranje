@@ -193,23 +193,24 @@ class Repo:
 
 
 
-    
-def dodaj_rezervacijo(self, rezervacija: Rezervacija):
-    cursor = self.conn.cursor()
-    sql = """
-    INSERT INTO rezervacija (lokacija, id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod)
-    VALUES (%s, %s, %s, %s, %s, %s)
-    """
-    cursor.execute(sql, (
-        rezervacija.lokacija,
-        rezervacija.id_parkirnega_mesta,
-        rezervacija.uporabnisko_ime,
-        rezervacija.registrska_stevilka,
-        rezervacija.prihod,
-        rezervacija.odhod
-    ))
-    self.conn.commit()
-    cursor.close()
+        
+    def dodaj_rezervacijo(self, rezervacije: Rezervacija):
+        cursor = self.conn.cursor()
+        sql = """
+        INSERT INTO rezervacija (lokacija, id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """
+        cursor.execute(sql, (
+            rezervacije.lokacija,
+            rezervacije.id_parkirnega_mesta,
+            rezervacije.uporabnisko_ime,
+            rezervacije.registrska_stevilka,
+            rezervacije.prihod,
+            rezervacije.odhod
+        ))
+        self.conn.commit()
+        cursor.close()
+
 
 
 

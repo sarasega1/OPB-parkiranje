@@ -217,8 +217,8 @@ def podrobnosti_parkirisca(id):
 
 
 
-@get('/rezervacija/<mesto_id:int>')
-def prikazi_rezervacijo(mesto_id):
+@get('/rezervacija/<mesto_id:int>/<lokacija>')
+def prikazi_rezervacijo(mesto_id, lokacija):
     s = request.environ.get('beaker.session')
     if s:
         uporabnik = {
@@ -236,9 +236,17 @@ def prikazi_rezervacijo(mesto_id):
     return template_user('rezervacija.html',
                          napaka=None,
                          mesto_id=mesto_id,
+                         lokacija = lokacija,
                          registrska_stevilka='',
                          prihod='',
                          odhod='')
+
+
+
+
+
+
+
 
 @post('/rezervacija/<mesto_id:int>')
 @cookie_required
@@ -247,39 +255,26 @@ def rezervacija_post(mesto_id):
     if not uporabnisko_ime:
         return redirect(url('/prijava'))
 
-    registrska_stevilka = request.forms.get('registracija')
+    # Preberi podatke iz obrazca, vključno z lokacijo
+    registrska_stevilka = request.forms.get('registrska_stevilka')
     prihod = request.forms.get('prihod')
-    odhod = request.forms.get('odhod')  # preveri to ime!
-
-    print(f"Prihod: {prihod} (type: {type(prihod)})")
-    print(f"Odhod: {odhod} (type: {type(odhod)})")
-
-    lokacija = "nekaj"  # pravilno nastavi lokacijo
+    odhod = request.forms.get('odhod')
+    lokacija = request.forms.get('lokacija')   # pomembno!
 
     if not prihod or not odhod:
-        return template_user('rezervacija.html', mesto_id=mesto_id, napaka="Prihod ali odhod nista vnešena.",
+        return template_user('rezervacija.html', mesto_id=mesto_id, lokacija=lokacija, napaka="Prihod ali odhod nista vnešena.",
                              registrska_stevilka=registrska_stevilka, prihod=prihod, odhod=odhod)
 
     try:
         service.naredi_rezervacijo(lokacija, mesto_id, uporabnisko_ime, registrska_stevilka, prihod, odhod)
     except ValueError as e:
-        return template_user('rezervacija.html', mesto_id=mesto_id, napaka=str(e),
+        return template_user('rezervacija.html', mesto_id=mesto_id, lokacija=lokacija, napaka=str(e),
                              registrska_stevilka=registrska_stevilka, prihod=prihod, odhod=odhod)
 
     return template_user("rezervacija_uspesna.html", sporocilo="Rezervacija uspešna!")
 
 
-def dodaj_rezervacijo(id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod):
-    conn = AuthService
-    cursor = conn.cursor()
-    sql = """
-    INSERT INTO rezervacija (id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod)
-    VALUES (%s, %s, %s, %s, %s)
-    """
-    cursor.execute(sql, (id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod))
-    conn.commit()
-    cursor.close()
-    conn.close()
+
 
 @get('/rezervacije')
 @admin_required
@@ -292,7 +287,4 @@ def vse_rezervacije():
 
 if __name__ == "__main__":
    
-    run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
-
-
-
+    run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True) 
