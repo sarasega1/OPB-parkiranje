@@ -217,29 +217,26 @@ def podrobnosti_parkirisca(id):
 
 
 
+from datetime import datetime
+
+from datetime import datetime
+
 @get('/rezervacija/<mesto_id:int>/<lokacija>')
+@cookie_required
 def prikazi_rezervacijo(mesto_id, lokacija):
-    s = request.environ.get('beaker.session')
-    if s:
-        uporabnik = {
-            'ime': s.get('ime'),
-            'priimek': s.get('priimek'),
-            'uporabnisko_ime': s.get('uporabnisko_ime'),
-            'rola': s.get('rola')
-        } if s.get('ime') else None
-    else:
-        uporabnik = None
-
-    rola = uporabnik['rola'] if uporabnik else None
-
-    # Dodaj prazne vrednosti za formo
+    now = datetime.now()
+    min_datetime = now.strftime("%Y-%m-%dT%H:%M")
+    max_datetime = now.replace(hour=23, minute=59, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M")
+    
     return template_user('rezervacija.html',
                          napaka=None,
                          mesto_id=mesto_id,
-                         lokacija = lokacija,
+                         lokacija=lokacija,
                          registrska_stevilka='',
-                         prihod='',
-                         odhod='')
+                         prihod=min_datetime,
+                         odhod='',
+                         min_datetime=min_datetime,
+                         max_datetime=max_datetime)
 
 
 
@@ -247,6 +244,10 @@ def prikazi_rezervacijo(mesto_id, lokacija):
 
 
 
+
+
+
+from datetime import datetime
 
 @post('/rezervacija/<mesto_id:int>')
 @cookie_required
@@ -255,24 +256,41 @@ def rezervacija_post(mesto_id):
     if not uporabnisko_ime:
         return redirect(url('/prijava'))
 
-    # Preberi podatke iz obrazca, vključno z lokacijo
     registrska_stevilka = request.forms.get('registrska_stevilka')
     prihod = request.forms.get('prihod')
     odhod = request.forms.get('odhod')
-    lokacija = request.forms.get('lokacija')   # pomembno!
+    lokacija = request.forms.get('lokacija')
+
+    # 🔽 dodamo min/max datetime spet za prikaz v primeru napake
+    now = datetime.now()
+    min_datetime = now.strftime("%Y-%m-%dT%H:%M")
+    max_datetime = now.replace(hour=23, minute=59, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M")
 
     if not prihod or not odhod:
-        return template_user('rezervacija.html', mesto_id=mesto_id, lokacija=lokacija, napaka="Prihod ali odhod nista vnešena.",
-                             registrska_stevilka=registrska_stevilka, prihod=prihod, odhod=odhod)
+        return template_user('rezervacija.html',
+                             mesto_id=mesto_id,
+                             lokacija=lokacija,
+                             napaka="Prihod ali odhod nista vnešena.",
+                             registrska_stevilka=registrska_stevilka,
+                             prihod=prihod,
+                             odhod=odhod,
+                             min_datetime=min_datetime,
+                             max_datetime=max_datetime)
 
     try:
         service.naredi_rezervacijo(lokacija, mesto_id, uporabnisko_ime, registrska_stevilka, prihod, odhod)
     except ValueError as e:
-        return template_user('rezervacija.html', mesto_id=mesto_id, lokacija=lokacija, napaka=str(e),
-                             registrska_stevilka=registrska_stevilka, prihod=prihod, odhod=odhod)
+        return template_user('rezervacija.html',
+                             mesto_id=mesto_id,
+                             lokacija=lokacija,
+                             napaka=str(e),
+                             registrska_stevilka=registrska_stevilka,
+                             prihod=prihod,
+                             odhod=odhod,
+                             min_datetime=min_datetime,
+                             max_datetime=max_datetime)
 
     return template_user("rezervacija_uspesna.html", sporocilo="Rezervacija uspešna!")
-
 
 
 
@@ -287,4 +305,4 @@ def vse_rezervacije():
 
 if __name__ == "__main__":
    
-    run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True) 
+    run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)

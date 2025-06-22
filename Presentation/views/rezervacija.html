@@ -13,13 +13,24 @@
 
   <div class="form-group">
     <label for="prihod">Čas prihoda</label>
-    <input type="datetime-local" class="form-control" name="prihod" id="prihod" value="{{prihod or ''}}" required>
+    <input type="datetime-local" class="form-control" name="prihod" id="prihod"
+          value="{{prihod or ''}}"
+          min="{{min_datetime}}"
+          max="{{max_datetime}}"
+          required readonly>
   </div>
 
   <div class="form-group">
     <label for="odhod">Čas odhoda</label>
-    <input type="datetime-local" class="form-control" name="odhod" id="odh" value="{{odhod or ''}}" required>
+    <input type="datetime-local" class="form-control" name="odhod" id="odhod"
+          value="{{odhod or ''}}"
+          min="{{min_datetime}}"
+          max="{{max_datetime}}"
+          required>
   </div>
+    
+  </div>
+
 
   <br>
   <button type="submit" class="btn btn-primary">Rezerviraj parkirno mesto</button>

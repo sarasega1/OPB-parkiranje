@@ -30,8 +30,7 @@ class ParkirisceService:
         odhod = datetime.strptime(odhod_str, "%Y-%m-%dT%H:%M")
         sedaj = datetime.now()
 
-        if prihod < sedaj:
-            raise ValueError("Prihod ne sme biti v preteklosti!")
+
 
         if odhod <= prihod:
             raise ValueError("Odhod mora biti kasneje od prihoda!")
