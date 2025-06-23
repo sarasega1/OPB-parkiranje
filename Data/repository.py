@@ -3,7 +3,7 @@ psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo prob
 import Data.auth_public as auth
 import os
 from datetime import datetime, time
-
+import sqlite3
 from Data.models import Parkirisce, Oseba, ParkirisceDto, Uporabnik, Parkirno_mesto, Rezervacija
 from typing import List
 
@@ -210,6 +210,17 @@ class Repo:
         ))
         self.conn.commit()
         cursor.close()
+
+    def dobi_zasedena_mesta(self, lokacija: str) -> List[int]:
+        now = datetime.now().time()
+        self.cur.execute("""
+            SELECT id_parkirnega_mesta
+            FROM rezervacija
+            WHERE lokacija = %s
+            AND prihod <= %s AND odhod >= %s
+        """, (lokacija, now, now))
+        rows = self.cur.fetchall()
+        return [r['id_parkirnega_mesta'] for r in rows]
 
 
 

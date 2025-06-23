@@ -1,7 +1,7 @@
 from Data.repository import Repo
 from Data.models import *
 from typing import List
-
+import sqlite3
 from datetime import datetime
 
 # V tej datoteki bomo definirali razred za obdelavo in delo s transakcijami
@@ -52,8 +52,9 @@ class ParkirisceService:
         # Preveri, če oseba obstaja (uporabniško ime je edinstveno)
         return self.repo.obstaja_oseba(uporabnisko_ime)
 
-    
-
+        
+    def dobi_zasedena_mesta(self,lokacija: str) -> List[int]:
+            return self.repo.dobi_zasedena_mesta(lokacija)
 
     def dodaj_osebo(self, uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo):
         self.repo.dodaj_osebo(uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo)
@@ -66,6 +67,8 @@ class ParkirisceService:
         osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
         return osebe
 """
+
+  
 
    
 

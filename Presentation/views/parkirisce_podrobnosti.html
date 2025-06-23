@@ -18,18 +18,32 @@
         <th>Rezervacija</th>
       </tr>
     </thead>
-    <tbody>
-      % for i in range(1, parkirisce.dnevni_na_voljo + 1):
-        <tr>
-          <td>{{parkirisce.id}}{{i}}</td>
-          <td>Ne</td>
-          <td></td>
-          <td></td>
-          <td><a href="/rezervacija/{{i}}/{{parkirisce.lokacija}}">Rezervacija</a></td>
-        </tr>
+   <tbody>
+  % for i in range(1, parkirisce.dnevni_na_voljo + 1):
+    <tr>
+      <td>{{i}}</td>
+      <td>
+        % if i in zasedena_mesta:
+          Da
+        % else:
+         Ne
+        % end
+      </td>
+      <td></td>
+      <td></td>
+      % if i in zasedena_mesta:
+        <td>-</td>
+      % else:
+        <td><a href="/rezervacija/{{i}}/{{parkirisce.lokacija}}">Rezervacija</a></td>
       % end
-    </tbody>
+    </tr>
+  % end
+</tbody>
+
   </table>
 
   <a href="{{url('/')}}">Nazaj</a>
 </div>
+
+
+

@@ -206,11 +206,12 @@ def podrobnosti_parkirisca(id):
         return template("napaka.html", napaka="Parkirišče ne obstaja.")
     
     rola = request.get_cookie("rola")
-
+    zasedena_mesta = service.dobi_zasedena_mesta(parkirisce.lokacija)
+    print(zasedena_mesta)
     if rola == "admin":
-        return template_user("parkirisce_podrobnosti2.html", parkirisce=parkirisce)
+        return template_user("parkirisce_podrobnosti2.html", parkirisce=parkirisce, zasedena_mesta = zasedena_mesta)
     else:
-        return template_user("parkirisce_podrobnosti.html", parkirisce=parkirisce)
+        return template_user("parkirisce_podrobnosti.html", parkirisce=parkirisce, zasedena_mesta= zasedena_mesta)
  # Dokler nimate razvitega vmesnika za dodajanje uporabnikov, jih dodajte kar ročno.
 #auth.dodaj_uporabnika('gasper', 'admin', 'gasper')
 
