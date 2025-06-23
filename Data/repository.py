@@ -1,10 +1,9 @@
 import psycopg2, psycopg2.extensions, psycopg2.extras
-psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) 
 import Data.auth_public as auth
 import os
 from datetime import datetime, time
-import sqlite3
-from Data.models import Parkirisce, Oseba, ParkirisceDto, Uporabnik, Parkirno_mesto, Rezervacija
+from Data.models import Parkirisce, Oseba, Uporabnik, Rezervacija
 from typing import List
 
 # Preberemo port za bazo iz okoljskih spremenljivk
@@ -27,7 +26,7 @@ class Repo:
         
         """)
         
-        # rezultate querya pretovrimo v python seznam objektov (transkacij)
+        # rezultate querya pretovrimo v python seznam objektov 
         osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
         return osebe  
     def dobi_oseboDto(self) -> List[Oseba]:               
@@ -37,14 +36,14 @@ class Repo:
         
         """)
         
-        # rezultate querya pretovrimo v python seznam objektov (transkacij)
+        # rezultate querya pretvorimo v python seznam objektov 
         osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
         return osebe
 
 
     def dobi_parkirisca(self) -> List[Parkirisce]:               
         self.cur.execute("""
-            SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
+            SELECT id, lokacija, dnevni_zasedeni
             FROM parkirisca
         
         """)
@@ -53,16 +52,7 @@ class Repo:
         parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
         return parkirisca
     
-    def dobi_parkirisca(self) -> List[Parkirisce]:               
-            self.cur.execute("""
-                SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
-                FROM parkirisca
-            
-            """)
-        
-            # rezultate querya pretovrimo v python seznam objektov (transkacij)
-            parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
-            return parkirisca
+
     def dobi_parkirisce(self, id: int) -> Parkirisce:
         self.cur.execute("""
                      SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
@@ -226,16 +216,7 @@ class Repo:
 
 
 
-    # def dobi_parkiriscaDto(self) -> List[ParkirisceDto]:               
-    #     self.cur.execute("""
-    #         SELECT id, lokacija, trr
-    #         FROM parkirisca
-        
-    #     """)
-        
-    #     # rezultate querya pretovrimo v python seznam objektov (transkacij)
-    #     parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
-    #     return parkirisca
+
     
 
 if __name__ == "__main__":

@@ -59,15 +59,7 @@ class ParkirisceService:
     def dodaj_osebo(self, uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo):
         self.repo.dodaj_osebo(uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo)
 
-    # Vrne vsa parkirna mesta za določeno parkirišče
-    def dobi_parkirna_mesta(self, parkirisce_id: int) -> List[Parkirno_mesto]:
-        return self.repo.dobi_parkirna_mesta(parkirisce_id)
-
-"""  def dobi_oseboDto(self) -> List[Oseba]:               
-        osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
-        return osebe
-"""
-
+ 
   
 
    
