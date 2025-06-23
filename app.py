@@ -207,11 +207,14 @@ def podrobnosti_parkirisca(id):
     
     rola = request.get_cookie("rola")
     zasedena_mesta = service.dobi_zasedena_mesta(parkirisce.lokacija)
-    print(zasedena_mesta)
+    vsa_mesta = list(range(1, parkirisce.dnevni_na_voljo + 1))
+    mesta_status = [(i, i in zasedena_mesta) for i in vsa_mesta]
+    # Sortiramo, da so najprej prosta mesta (False), potem zasedena (True)
+    mesta_status.sort(key=lambda x: x[1])  
     if rola == "admin":
-        return template_user("parkirisce_podrobnosti2.html", parkirisce=parkirisce, zasedena_mesta = zasedena_mesta)
+        return template_user("parkirisce_podrobnosti2.html", parkirisce=parkirisce,mesta_status=mesta_status, zasedena_mesta = zasedena_mesta)
     else:
-        return template_user("parkirisce_podrobnosti.html", parkirisce=parkirisce, zasedena_mesta= zasedena_mesta)
+        return template_user("parkirisce_podrobnosti.html", parkirisce=parkirisce, mesta_status=mesta_status, zasedena_mesta= zasedena_mesta)
  # Dokler nimate razvitega vmesnika za dodajanje uporabnikov, jih dodajte kar ročno.
 #auth.dodaj_uporabnika('gasper', 'admin', 'gasper')
 

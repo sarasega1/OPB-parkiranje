@@ -19,19 +19,13 @@
       </tr>
     </thead>
    <tbody>
-  % for i in range(1, parkirisce.dnevni_na_voljo + 1):
+  % for i, zasedeno in mesta_status:
     <tr>
       <td>{{i}}</td>
-      <td>
-        % if i in zasedena_mesta:
-          Da
-        % else:
-         Ne
-        % end
-      </td>
+      <td>{{'Zasedeno' if zasedeno else 'Prosto'}}</td>
       <td></td>
       <td></td>
-      % if i in zasedena_mesta:
+      % if zasedeno:
         <td>-</td>
       % else:
         <td><a href="/rezervacija/{{i}}/{{parkirisce.lokacija}}">Rezervacija</a></td>
@@ -39,6 +33,7 @@
     </tr>
   % end
 </tbody>
+
 
   </table>
 
