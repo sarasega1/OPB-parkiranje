@@ -4,8 +4,7 @@
 <div>
   <h2>Parkirišče: {{parkirisce.lokacija}}</h2>
   <p><strong>ID:</strong> {{parkirisce.id}}</p>
-  <p><strong>Dnevni na voljo:</strong> {{parkirisce.dnevni_na_voljo}}</p>
-  <p><strong>Dnevni zasedeni:</strong> {{parkirisce.dnevni_zasedeni}}</p>
+  <p><strong>Število vseh parkirnih mest:</strong> {{parkirisce.dnevni_na_voljo}}</p>
 
   <h3>Seznam parkirnih mest</h3>
   <table class="table">
@@ -13,24 +12,15 @@
       <tr>
         <th>Št. mesta</th>
         <th>Zasedenost</th>
-        <th>Čas prihoda</th>
-        <th>Čas odhoda</th>
-        <th>Ime</th>
-        <th>Priimek</th>
-      
       </tr>
     </thead>
     <tbody>
-      % for i in range(1, parkirisce.dnevni_na_voljo + 1):
-          <tr>
-            <td>{{parkirisce.id}}{{i}}</td>
-            <td>Ne</td>
-            <td></td>
-            <td></td>
-            <td><a href="/rezervacija/{{i}}/{{parkirisce.lokacija}}">Rezervacija</a></td>
-          </tr>
+       % for i, zasedeno in mesta_status:
+    <tr>
+      <td>{{i}}</td>
+      <td>{{'Zasedeno' if zasedeno else 'Prosto'}}</td>
       % end
-
+    </tr>
     </tbody>
   </table>
 

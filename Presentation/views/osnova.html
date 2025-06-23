@@ -16,45 +16,46 @@
     % uporabnik = uporabnik if 'uporabnik' in globals() else ''
     % stran = stran if 'stran' in globals() else ''
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="navbar-nav">   
-        % if rola == 'admin':    
-            % if stran=='osebe':
-                <a class="nav-link active" href="{{url('/osebe')}}">Osebe</a>
-            % else:
-                <a class="nav-link" href="{{url('/osebe')}}">Osebe</a>
-            % end  
-        % end    
+        <div class="container-fluid">
+            <div class="navbar-nav me-auto">   
+                % if rola == 'admin':    
+                    % if stran=='osebe':
+                        <a class="nav-link active" href="{{url('/osebe')}}">Osebe</a>
+                    % else:
+                        <a class="nav-link" href="{{url('/osebe')}}">Osebe</a>
+                    % end  
+                % end    
 
-        % if stran=='parkirisca':
-            <a class="nav-link active" href="{{url('/dobi_parkirisca')}}">Parkirišča</a>
-        % else:
-            <a class="nav-link" href="{{url('/dobi_parkirisca')}}">Parkirišča</a>
-        % end  
-        % if stran=='rezervacije':
-            <a class="nav-link active" href="{{url('/rezervacije')}}">Rezervacije</a>
-        % else:
-            <a class="nav-link" href="{{url('/rezervacije')}}">Rezervacije</a>
-        % end      
-        </div>
+                % if stran=='parkirisca':
+                    <a class="nav-link active" href="{{url('/dobi_parkirisca')}}">Parkirišča</a>
+                % else:
+                    <a class="nav-link" href="{{url('/dobi_parkirisca')}}">Parkirišča</a>
+                % end  
 
-        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
-          <ul class="navbar-nav ml-auto">
-            % if rola and uporabnik:
-            <span class="navbar-text">
-              {{uporabnik}} ({{rola}}) 
-            </span>
-            % end      
+                % if rola == 'admin':
+                    % if stran=='rezervacije':
+                        <a class="nav-link active" href="{{url('/rezervacije')}}">Rezervacije</a>
+                    % else:
+                        <a class="nav-link" href="{{url('/rezervacije')}}">Rezervacije</a>
+                    % end
+                % end
+            </div>
 
-            <li class="nav-link">
-                <a class="dropdown-item" href="{{url('odjava')}}">Odjava</a>
-            </li>
-          </ul>
+            <div class="d-flex align-items-center">
+                % if rola and uporabnik:
+                    <span class="navbar-text me-3">
+                        {{uporabnik}} ({{rola}})
+                    </span>
+                % end
+
+                <a class="btn btn-outline-secondary" href="{{url('odjava')}}">Odjava</a>
+            </div>
         </div>
     </nav>
+
 
     <div class="container mt-4">
         {{!base}}
     </div>
 </body>
 </html>
-
