@@ -212,16 +212,12 @@ def podrobnosti_parkirisca(id):
     # Sortiramo, da so najprej prosta mesta (False), potem zasedena (True)
     mesta_status.sort(key=lambda x: x[1])  
     if rola == "admin":
-        return template_user("parkirisce_podrobnosti2.html", parkirisce=parkirisce,mesta_status=mesta_status, zasedena_mesta = zasedena_mesta)
+        return template_user("parkirisce_podrobnosti2.html", parkirisce=parkirisce, mesta_status=mesta_status, zasedena_mesta = zasedena_mesta)
     else:
         return template_user("parkirisce_podrobnosti.html", parkirisce=parkirisce, mesta_status=mesta_status, zasedena_mesta= zasedena_mesta)
  # Dokler nimate razvitega vmesnika za dodajanje uporabnikov, jih dodajte kar ročno.
 #auth.dodaj_uporabnika('gasper', 'admin', 'gasper')
 
-
-
-
-from datetime import datetime
 
 from datetime import datetime
 
@@ -310,3 +306,4 @@ def vse_rezervacije():
 if __name__ == "__main__":
    
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
+0

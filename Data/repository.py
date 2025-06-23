@@ -1,9 +1,9 @@
 import psycopg2, psycopg2.extensions, psycopg2.extras
-psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) 
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
 import Data.auth_public as auth
 import os
 from datetime import datetime, time
-from Data.models import Parkirisce, Oseba, Uporabnik, Rezervacija
+from Data.models import Parkirisce, Oseba, Uporabnik,Rezervacija
 from typing import List
 
 # Preberemo port za bazo iz okoljskih spremenljivk
@@ -26,7 +26,7 @@ class Repo:
         
         """)
         
-        # rezultate querya pretovrimo v python seznam objektov 
+        # rezultate querya pretovrimo v python seznam objektov (transkacij)
         osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
         return osebe  
     def dobi_oseboDto(self) -> List[Oseba]:               
@@ -36,14 +36,14 @@ class Repo:
         
         """)
         
-        # rezultate querya pretvorimo v python seznam objektov 
+        # rezultate querya pretovrimo v python seznam objektov (transkacij)
         osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
         return osebe
 
 
     def dobi_parkirisca(self) -> List[Parkirisce]:               
         self.cur.execute("""
-            SELECT id, lokacija, dnevni_zasedeni
+            SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
             FROM parkirisca
         
         """)
@@ -52,7 +52,16 @@ class Repo:
         parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
         return parkirisca
     
-
+    def dobi_parkirisca(self) -> List[Parkirisce]:               
+            self.cur.execute("""
+                SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
+                FROM parkirisca
+            
+            """)
+        
+            # rezultate querya pretovrimo v python seznam objektov (transkacij)
+            parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
+            return parkirisca
     def dobi_parkirisce(self, id: int) -> Parkirisce:
         self.cur.execute("""
                      SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
@@ -118,7 +127,7 @@ class Repo:
             rezervacija.registrska_stevilka,
             rezervacija.prihod,
             rezervacija.odhod,
-            rezervacija.lokacija   # <----- TUKAJ dodaj lokacijo
+            rezervacija.lokacija   
         ))
         self.conn.commit()
         cursor.close()
@@ -180,27 +189,7 @@ class Repo:
             return rezervacije
 
 
-
-
-
-        
-    def dodaj_rezervacijo(self, rezervacije: Rezervacija):
-        cursor = self.conn.cursor()
-        sql = """
-        INSERT INTO rezervacija (lokacija, id_parkirnega_mesta, uporabnisko_ime, registrska_stevilka, prihod, odhod)
-        VALUES (%s, %s, %s, %s, %s, %s)
-        """
-        cursor.execute(sql, (
-            rezervacije.lokacija,
-            rezervacije.id_parkirnega_mesta,
-            rezervacije.uporabnisko_ime,
-            rezervacije.registrska_stevilka,
-            rezervacije.prihod,
-            rezervacije.odhod
-        ))
-        self.conn.commit()
-        cursor.close()
-
+ 
     def dobi_zasedena_mesta(self, lokacija: str) -> List[int]:
         now = datetime.now().time()
         self.cur.execute("""
@@ -213,11 +202,6 @@ class Repo:
         return [r['id_parkirnega_mesta'] for r in rows]
 
 
-
-
-
-
-    
 
 if __name__ == "__main__":
     repo = Repo()

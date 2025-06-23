@@ -56,8 +56,8 @@ class ParkirisceService:
     def dobi_zasedena_mesta(self,lokacija: str) -> List[int]:
             return self.repo.dobi_zasedena_mesta(lokacija)
 
-    def dodaj_osebo(self, uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo):
-        self.repo.dodaj_osebo(uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo)
+    def dodaj_osebo(self, uporabnisko_ime, ime, priimek, telefonska_stevilka):
+        self.repo.dodaj_osebo(uporabnisko_ime, ime, priimek, telefonska_stevilka)
 
  
   
