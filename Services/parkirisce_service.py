@@ -1,15 +1,12 @@
 from Data.repository import Repo
 from Data.models import *
 from typing import List
-import sqlite3
 from datetime import datetime
 
-# V tej datoteki bomo definirali razred za obdelavo in delo s transakcijami
+
 
 class ParkirisceService:
     def __init__(self) -> None:
-        # Potrebovali bomo instanco repozitorija. Po drugi strani bi tako instanco 
-        # lahko dobili tudi kot input v konstrukturju.
         self.repo = Repo()
 
     def parkirisca(self) -> List[Parkirisce]:
@@ -49,15 +46,15 @@ class ParkirisceService:
         return self.repo.dobi_rezervacije()
 
     def obstaja_oseba(self, uporabnisko_ime: str) -> bool:
-        # Preveri, če oseba obstaja (uporabniško ime je edinstveno)
+    
         return self.repo.obstaja_oseba(uporabnisko_ime)
 
         
     def dobi_zasedena_mesta(self,lokacija: str) -> List[int]:
             return self.repo.dobi_zasedena_mesta(lokacija)
 
-    def dodaj_osebo(self, uporabnisko_ime, ime, priimek, telefonska_stevilka):
-        self.repo.dodaj_osebo(uporabnisko_ime, ime, priimek, telefonska_stevilka)
+    def dodaj_osebo(self, uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo):
+        self.repo.dodaj_osebo(uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo)
 
  
   

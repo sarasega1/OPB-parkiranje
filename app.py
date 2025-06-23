@@ -2,20 +2,13 @@ from functools import wraps
 from Presentation.bottleext import get, post, run, request, template, redirect, static_file, url, response, template_user
 from Services.auth_service import AuthService
 from Services.parkirisce_service import ParkirisceService
-#from Services.auth_service import AuthService
 import os
+from datetime import datetime
 
-# Ustvarimo instance servisov, ki jih potrebujemo. 
-# Če je število servisov veliko, potem je service bolj smiselno inicializirati v metodi in na
-# začetku datoteke (saj ne rabimo vseh servisov v vseh metodah!)
 #python -m venv venv 
 # Aktiviramo okolje z venv\Scripts\activate (windows) ali source venv/bin/activate (macos)
 # pip install -r requirements.txt 
 
-#SELECT pg_terminate_backend(pid)
-#FROM pg_stat_activity
-#WHERE wait_event_type = 'Lock'
- # AND query LIKE '%osebe%';
 service = ParkirisceService()
 auth = AuthService()
 
@@ -29,9 +22,9 @@ def cookie_required(f):
     Dekorator, ki zahteva veljaven piškotek. Če piškotka ni, uporabnika preusmeri na stran za prijavo.
     """
     @wraps(f)
-    def decorated( *args, **kwargs):                                              # iz requesta dobimo vr. ki pripada ključu - uporabnik. 
-        cookie = request.get_cookie("uporabnik")                                  # Če obstaja, mu vrnemo neki, če pa cookie zanj ne obstaja, mu vrne stran za prijavo (torej potrebna je prijava!)
-        if cookie:                                                                 # povsod kjer zahtevamo prijavo, bodo s cookie required! 
+    def decorated( *args, **kwargs):                                            
+        cookie = request.get_cookie("uporabnik")                                
+        if cookie:                                                                 
             return f(*args, **kwargs)
         return template("prijava.html",uporabnik=None, rola=None, napaka="Potrebna je prijava!")
         
@@ -41,7 +34,7 @@ def cookie_required(f):
 def static(filename):
     return static_file(filename, root='Presentation/static')
 
-def admin_required(f):                # napaka.html? ali pač?
+def admin_required(f):                
     """
     Dekorator, ki dovoli dostop samo administratorjem.
     """
@@ -97,7 +90,7 @@ def registracija_post():
     telefonska_stevilka = request.forms.get('telefonska_stevilka')
     ime = request.forms.get('ime')
     priimek = request.forms.get('priimek')
-    vloga = 'uporabnik'  # Vedno uporabnik, admin ne sme izbirati!
+    vloga = 'uporabnik'  
 
     # Preverimo, če obstaja uporabnik v bazi uporabnikov
     if auth.obstaja_uporabnik(uporabnisko_ime):
@@ -139,9 +132,7 @@ def registracija_get():
 
 
 
-
-
-@post('/prijava')                                       #glej v views prijava html
+@post('/prijava')                                      
 def prijava():
     """
     Prijavi uporabnika v aplikacijo. Če je prijava uspešna, ustvari piškotke o uporabniku in njegovi roli.
@@ -157,14 +148,8 @@ def prijava():
     if prijava:
         response.set_cookie("uporabnik", username)
         response.set_cookie("rola", prijava.role)
-        
-        # redirect v večino primerov izgleda ne deluje
+       
         redirect(url('/'))
-
-        # Uporabimo kar template, kot v sami "index" funkciji
-
-        # transakcije = service.dobi_transakcije()        
-        # return template('transakcije.html', transakcije = transakcije)
         
     else:
         return template("prijava.html", uporabnik=None, rola=None, napaka="Neuspešna prijava. Napačno geslo ali uporabniško ime.")
@@ -209,17 +194,15 @@ def podrobnosti_parkirisca(id):
     zasedena_mesta = service.dobi_zasedena_mesta(parkirisce.lokacija)
     vsa_mesta = list(range(1, parkirisce.dnevni_na_voljo + 1))
     mesta_status = [(i, i in zasedena_mesta) for i in vsa_mesta]
-    # Sortiramo, da so najprej prosta mesta (False), potem zasedena (True)
     mesta_status.sort(key=lambda x: x[1])  
     if rola == "admin":
         return template_user("parkirisce_podrobnosti2.html", parkirisce=parkirisce, mesta_status=mesta_status, zasedena_mesta = zasedena_mesta)
     else:
         return template_user("parkirisce_podrobnosti.html", parkirisce=parkirisce, mesta_status=mesta_status, zasedena_mesta= zasedena_mesta)
- # Dokler nimate razvitega vmesnika za dodajanje uporabnikov, jih dodajte kar ročno.
-#auth.dodaj_uporabnika('gasper', 'admin', 'gasper')
 
 
-from datetime import datetime
+
+
 
 @get('/rezervacija/<mesto_id:int>/<lokacija>')
 @cookie_required
@@ -241,14 +224,6 @@ def prikazi_rezervacijo(mesto_id, lokacija):
 
 
 
-
-
-
-
-
-
-from datetime import datetime
-
 @post('/rezervacija/<mesto_id:int>')
 @cookie_required
 def rezervacija_post(mesto_id):
@@ -261,7 +236,6 @@ def rezervacija_post(mesto_id):
     odhod = request.forms.get('odhod')
     lokacija = request.forms.get('lokacija')
 
-    # 🔽 dodamo min/max datetime spet za prikaz v primeru napake
     now = datetime.now()
     min_datetime = now.strftime("%Y-%m-%dT%H:%M")
     max_datetime = now.replace(hour=23, minute=59, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M")
