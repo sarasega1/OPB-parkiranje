@@ -27,9 +27,11 @@
                 <td>{{r.prihod}}</td>
                 <td>{{r.odhod}}</td>
                 <td> <form method="post" action="/moje_rezervacije" style="display:inline;">
-            <button name="akcija" value="preklici" type="submit">Prekliči</button>
-            <button name="akcija" value="podaljsaj" type="submit">Podaljšaj +1h</button>
-        </form></td>
+            <button name="akcija" value="preklici" type="submit">Prekliči</button></form>
+                      <a href="/podaljsaj_rezervacijo?lokacija={{r.lokacija}}&id_parkirnega_mesta={{r.id_parkirnega_mesta}}&prihod={{r.prihod}}">
+            <button type="button">Podaljšaj</button>
+                 </a>
+                </td>
             </tr>
             % end
         </tbody>

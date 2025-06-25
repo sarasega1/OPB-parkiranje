@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+%rebase('osnova.html', naslov='Podaljšaj rezervacijo', stran='podaljsaj_rezervacijo')
+<html>
+<head>
+    <title>Podaljšaj rezervacijo</title>
+</head>
+<body>
+    <h1>Podaljšaj rezervacijo</h1>
+
+    <form method="post" action="/podaljsaj_rezervacijo">
+        <input type="hidden" name="lokacija" value="{{lokacija}}">
+        <input type="hidden" name="id_parkirnega_mesta" value="{{id_parkirnega_mesta}}">
+        <input type="hidden" name="prihod" value="{{prihod}}">
+
+        <label for="cas">Za koliko časa želiš podaljšati?</label>
+        <select name="cas" id="cas">
+            <option value="15">15 minut</option>
+            <option value="30">30 minut</option>
+            <option value="60">1 ura</option>
+            <option value="120">2 uri</option>
+        </select>
+
+        <button type="submit">Potrdi podaljšanje</button>
+    </form>
+
+    <br>
+    <a href="/moje_rezervacije">Nazaj na moje rezervacije</a>
+
+</body>
+</html>

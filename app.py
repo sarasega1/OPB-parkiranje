@@ -152,10 +152,10 @@ def prijava():
         redirect(url('/'))
         
     else:
-        return template("prijava.html", uporabnik=None, rola=None, napaka="Neuspešna prijava. Napačno geslo ali uporabniško ime.")
+        return template("prijava.html", uporabnik=None, rola=None, napaka="Neuspešna prijava. Napačno geslo ali uporabniško ime.", url = url)
 @get('/prijava')
 def prijava_get():
-    return template("prijava.html", napaka=None, rola = None)
+    return template("prijava.html", napaka=None, rola = None, url = url)
 
 @get('/odjava')
 def odjava():
@@ -289,42 +289,75 @@ def moje_rezervacije():
     uporabnik = service.dobi_uporabnika(uporabnisko_ime)
     rezervacije = service.dobi_rezervacije_uporabnika(uporabnisko_ime)
     
-    return template('moje_rezervacije', moje_rezervacije=rezervacije)
+    return template('moje_rezervacije', moje_rezervacije=rezervacije, url = url)
 
 from bottle import post, request, redirect
 
 @post('/moje_rezervacije')
 @cookie_required
 def urejanje_rezervacije():
-    response.set_cookie("uporabnisko_ime", uporabnisko_ime)
-
     uporabnisko_ime = request.get_cookie("uporabnisko_ime")
     if uporabnisko_ime is None:
         redirect('/prijava')
     
     service = ParkirisceService()
 
-    # Pridobi podatke iz forme
-    rezervacija_id = request.forms.get('rezervacija_id')
-    akcija = request.forms.get('akcija')  # npr. 'preklici' ali 'podaljsaj'
+    lokacija = request.forms.get('lokacija')
+    id_parkirnega_mesta = request.forms.get('id_parkirnega_mesta')
+    prihod = request.forms.get('prihod')
+    akcija = request.forms.get('akcija')
 
-    # Najprej preveri, če rezervacija pripada uporabniku (varnost)
-    rezervacije = service.dobi_rezervacije_uporabnika(uporabnisko_ime)
-    rezervacija_ids = [str(r.id) for r in rezervacije]
-
-    if rezervacija_id not in rezervacija_ids:
-        return "Napaka: Nepravilna rezervacija."
+    if not (lokacija and id_parkirnega_mesta and prihod):
+        return "Napaka: Manjkajoči podatki."
 
     if akcija == 'preklici':
-        # Kličemo metodo za brisanje rezervacije
-        service.odstrani_rezervacijo(int(rezervacija_id))
+        service.odstrani_rezervacijo_po_kljucih(lokacija, id_parkirnega_mesta, prihod)
 
     elif akcija == 'podaljsaj':
-        # Na primer podaljšaj odhod za 1 uro
-        service.podaljsaj_rezervacijo(int(rezervacija_id), ure=1)
+        redirect(f"/podaljsaj_rezervacijo?lokacija={lokacija}&id_parkirnega_mesta={id_parkirnega_mesta}&prihod={prihod}")
 
-    # Po akciji nazaj na seznam rezervacij
     redirect('/moje_rezervacije')
+
+from bottle import request, redirect, template
+
+@get('/podaljsaj_rezervacijo')
+@cookie_required
+def prikazi_podaljsaj_obrazec():
+    uporabnisko_ime = request.get_cookie("uporabnik")
+    if uporabnisko_ime is None:
+        redirect('/prijava')
+
+    lokacija = request.query.lokacija
+    id_parkirnega_mesta = request.query.id_parkirnega_mesta
+    prihod = request.query.prihod
+
+    # Prikaži obrazec za izbiro koliko časa želi uporabnik podaljšati
+    return template('podaljsaj.html', 
+                    lokacija=lokacija, 
+                    id_parkirnega_mesta=id_parkirnega_mesta, 
+                    prihod=prihod)
+
+
+@post('/podaljsaj_rezervacijo')
+@cookie_required
+def podaljsaj_rezervacijo():
+    uporabnisko_ime = request.get_cookie("uporabnik")
+    if uporabnisko_ime is None:
+        redirect('/prijava')
+
+    lokacija = request.forms.get('lokacija')
+    id_parkirnega_mesta = int(request.forms.get('id_parkirnega_mesta'))
+    prihod = request.forms.get('prihod')
+    ure = int(request.forms.get('ure'))
+
+    from datetime import datetime, timedelta
+    prihod_dt = datetime.strptime(prihod, "%Y-%m-%d %H:%M:%S")
+
+    service = ParkirisceService()
+    service.podaljsaj_rezervacijo_po_kljucih(lokacija, id_parkirnega_mesta, prihod_dt, ure)
+
+    redirect('/moje_rezervacije')
+
 
 
 if __name__ == "__main__":

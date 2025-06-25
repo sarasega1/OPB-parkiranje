@@ -226,6 +226,39 @@ class Repo:
         """, (rezervacija.odhod, rezervacija.id))
         self.conn.commit()
 
+    def odstrani_rezervacijo_po_kljucih(self, lokacija: str, id_parkirnega_mesta: int, prihod: datetime) -> None:
+        self.cur.execute("""
+            DELETE FROM rezervacija
+            WHERE lokacija = %s AND id_parkirnega_mesta = %s AND prihod = %s
+        """, (lokacija, id_parkirnega_mesta, prihod))
+        self.conn.commit()
+        
+
+    def dobi_rezervacijo_po_kljucih(self, lokacija: str, id_parkirnega_mesta: int, prihod: datetime):
+        self.cur.execute("""
+            SELECT lokacija, id_parkirnega_mesta, registrska_stevilka, prihod, odhod
+            FROM rezervacija
+            WHERE lokacija = %s AND id_parkirnega_mesta = %s AND prihod = %s
+        """, (lokacija, id_parkirnega_mesta, prihod))
+        row = self.cur.fetchone()
+        if not row:
+            return None
+
+        return Rezervacija(
+            lokacija=row[0],
+            id_parkirnega_mesta=row[1],
+            registrska_stevilka=row[2],
+            prihod=row[3],
+            odhod=row[4]
+        )
+   
+    def posodobi_rezervacijo_po_kljucih(self, rezervacija):
+        self.cur.execute("""
+            UPDATE rezervacija 
+            SET odhod = %s
+            WHERE lokacija = %s AND id_parkirnega_mesta = %s AND prihod = %s
+        """, (rezervacija.odhod, rezervacija.lokacija, rezervacija.id_parkirnega_mesta, rezervacija.prihod))
+        self.conn.commit()
 
 if __name__ == "__main__":
     repo = Repo()

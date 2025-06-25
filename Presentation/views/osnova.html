@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,29 +18,29 @@
             <div class="navbar-nav me-auto">   
                 % if rola == 'admin':    
                     % if stran=='osebe':
-                        <a class="nav-link active" href="{{url('/osebe')}}">Osebe</a>
+                        <a class="nav-link active" href="/osebe">Osebe</a>
                     % else:
-                        <a class="nav-link" href="{{url('/osebe')}}">Osebe</a>
+                        <a class="nav-link" href="/osebe">Osebe</a>
                     % end  
                 % end    
 
                 % if stran=='parkirisca':
-                    <a class="nav-link active" href="{{url('/dobi_parkirisca')}}">Parkirišča</a>
+                    <a class="nav-link active" href="/dobi_parkirisca">Parkirišča</a>
                 % else:
-                    <a class="nav-link" href="{{url('/dobi_parkirisca')}}">Parkirišča</a>
+                    <a class="nav-link" href="/dobi_parkirisca">Parkirišča</a>
                 % end  
 
-                 % if stran=='moje_rezervacije':
-                    <a class="nav-link active" href="{{url('/moje_rezervacije')}}">Moje rezervacije</a>
+                % if stran=='moje_rezervacije':
+                    <a class="nav-link active" href="/moje_rezervacije">Moje rezervacije</a>
                 % else:
-                     <a class="nav-link active" href="{{url('/moje_rezervacije')}}">Moje rezervacije</a>
+                    <a class="nav-link" href="/moje_rezervacije">Moje rezervacije</a>
                 % end  
 
                 % if rola == 'admin':
                     % if stran=='rezervacije':
-                        <a class="nav-link active" href="{{url('/rezervacije')}}">Rezervacije</a>
+                        <a class="nav-link active" href="/rezervacije">Rezervacije</a>
                     % else:
-                        <a class="nav-link" href="{{url('/rezervacije')}}">Rezervacije</a>
+                        <a class="nav-link" href="/rezervacije">Rezervacije</a>
                     % end
                 % end
             </div>
@@ -54,7 +52,7 @@
                     </span>
                 % end
 
-                <a class="btn btn-outline-secondary" href="{{url('odjava')}}">Odjava</a>
+                <a class="btn btn-outline-secondary" href="/odjava">Odjava</a>
             </div>
         </div>
     </nav>
