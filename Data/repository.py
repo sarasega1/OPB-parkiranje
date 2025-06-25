@@ -196,7 +196,9 @@ class Repo:
             SELECT id_parkirnega_mesta
             FROM rezervacija
             WHERE lokacija = %s
-            AND prihod <= %s AND odhod >= %s
+            AND prihod::time <= %s::time
+            AND odhod::time >= %s::time
+
         """, (lokacija, now, now))
         rows = self.cur.fetchall()
         return [r['id_parkirnega_mesta'] for r in rows]
