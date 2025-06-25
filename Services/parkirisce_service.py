@@ -1,7 +1,7 @@
 from Data.repository import Repo
 from Data.models import *
 from typing import List
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 
@@ -56,8 +56,33 @@ class ParkirisceService:
     def dodaj_osebo(self, uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo):
         self.repo.dodaj_osebo(uporabnisko_ime, ime, priimek, telefonska_stevilka, geslo)
 
- 
-  
+    def dobi_uporabnika(self, uporabnisko_ime: str) -> Uporabnik | None:
+        return self.repo.dobi_uporabnika(uporabnisko_ime)
+    
+    def dobi_rezervacije_uporabnika(self, uporabnisko_ime: str) -> List[Rezervacija]:
+        return self.repo.dobi_rezervacije_uporabnika(uporabnisko_ime)
+
+
+    def odstrani_rezervacijo(self, rezervacija_id: int) -> None:
+        self.repo.odstrani_rezervacijo(rezervacija_id)
+
+    def podaljsaj_rezervacijo(self, rezervacija_id: int, ure: int = 1) -> None:
+        # Najprej dobimo rezervacijo
+        rezervacija = self.repo.dobi_rezervacijo(rezervacija_id)
+        # Podaljšamo čas odhoda
+        rezervacija.odhod += timedelta(hours=ure)
+        # Posodobimo v bazi
+        self.repo.posodobi_rezervacijo(rezervacija)
+
+
+    def podaljsaj_rezervacijo(self, rezervacija_id: int, ure: int = 1) -> None:
+        # Najprej dobimo rezervacijo
+        rezervacija = self.repo.dobi_rezervacijo(rezervacija_id)
+        # Podaljšamo čas odhoda 
+        rezervacija.odhod += timedelta(hours=ure)
+        # Posodobimo v bazi
+        self.repo.posodobi_rezervacijo(rezervacija)
+
 
    
 

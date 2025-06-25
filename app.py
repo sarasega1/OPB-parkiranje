@@ -277,6 +277,56 @@ def vse_rezervacije():
 
 
 
+@get('/moje_rezervacije')
+@cookie_required
+def moje_rezervacije():
+    uporabnisko_ime = request.get_cookie("uporabnik")
+    if uporabnisko_ime is None:
+        redirect('/prijava')
+
+    service = ParkirisceService()
+
+    uporabnik = service.dobi_uporabnika(uporabnisko_ime)
+    rezervacije = service.dobi_rezervacije_uporabnika(uporabnisko_ime)
+    
+    return template('moje_rezervacije', moje_rezervacije=rezervacije)
+
+from bottle import post, request, redirect
+
+@post('/moje_rezervacije')
+@cookie_required
+def urejanje_rezervacije():
+    response.set_cookie("uporabnisko_ime", uporabnisko_ime)
+
+    uporabnisko_ime = request.get_cookie("uporabnisko_ime")
+    if uporabnisko_ime is None:
+        redirect('/prijava')
+    
+    service = ParkirisceService()
+
+    # Pridobi podatke iz forme
+    rezervacija_id = request.forms.get('rezervacija_id')
+    akcija = request.forms.get('akcija')  # npr. 'preklici' ali 'podaljsaj'
+
+    # Najprej preveri, če rezervacija pripada uporabniku (varnost)
+    rezervacije = service.dobi_rezervacije_uporabnika(uporabnisko_ime)
+    rezervacija_ids = [str(r.id) for r in rezervacije]
+
+    if rezervacija_id not in rezervacija_ids:
+        return "Napaka: Nepravilna rezervacija."
+
+    if akcija == 'preklici':
+        # Kličemo metodo za brisanje rezervacije
+        service.odstrani_rezervacijo(int(rezervacija_id))
+
+    elif akcija == 'podaljsaj':
+        # Na primer podaljšaj odhod za 1 uro
+        service.podaljsaj_rezervacijo(int(rezervacija_id), ure=1)
+
+    # Po akciji nazaj na seznam rezervacij
+    redirect('/moje_rezervacije')
+
+
 if __name__ == "__main__":
    
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)

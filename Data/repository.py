@@ -200,7 +200,29 @@ class Repo:
         """, (lokacija, now, now))
         rows = self.cur.fetchall()
         return [r['id_parkirnega_mesta'] for r in rows]
+    
+    def dobi_rezervacije_uporabnika(self, uporabnisko_ime: str) -> List[Rezervacija]:
+        self.cur.execute("""
+            SELECT * FROM rezervacija WHERE uporabnisko_ime = %s
+        """, (uporabnisko_ime,))
+        rows = self.cur.fetchall()
+        return [Rezervacija.from_dict(row) for row in rows]  # če imaš from_dict, ali ustrezno pretvorbo
 
+
+    def odstrani_rezervacijo(self, rezervacija_id: int) -> None:
+        self.cur.execute("DELETE FROM rezervacija WHERE id = %s", (rezervacija_id,))
+        self.conn.commit()
+
+    def dobi_rezervacijo(self, rezervacija_id: int) -> Rezervacija:
+        self.cur.execute("SELECT * FROM rezervacija WHERE id = %s", (rezervacija_id,))
+        rows = self.cur.fetchone()
+        return [Rezervacija.from_row(row) for row in rows]
+
+    def posodobi_rezervacijo(self, rezervacija: Rezervacija) -> None:
+        self.cur.execute("""
+            UPDATE rezervacija SET odhod = %s WHERE id = %s
+        """, (rezervacija.odhod, rezervacija.id))
+        self.conn.commit()
 
 
 if __name__ == "__main__":

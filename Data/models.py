@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json
+from dataclasses_json import dataclass_json, config
 from datetime import datetime, time
 
 
@@ -38,27 +38,31 @@ class UporabnikDto:
     username: str = field(default="")
     role: str = field(default="") 
 
-
-
+def convert_to_datetime(value):
+    if isinstance(value, time):
+        return datetime.combine(datetime.today(), value)
+    if isinstance(value, str):
+        try:
+            return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
+        except:
+            pass
+    return value
 @dataclass_json
 @dataclass
 class Rezervacija:
     id_parkirnega_mesta: int = field(default=0)
     lokacija: str = field(default="")
-    prihod: datetime = field(default_factory=datetime.now)
-    odhod: datetime = field(default_factory=datetime.now)
+    prihod: datetime = field(default_factory=datetime.now, metadata=config(decoder=convert_to_datetime))
+    odhod: datetime = field(default_factory=datetime.now, metadata=config(decoder=convert_to_datetime))
     uporabnisko_ime: str = field(default="")
     registrska_stevilka: str = field(default="")
 
     @staticmethod
     def from_dict(d: dict) -> "Rezervacija":
-        
         def convert_to_datetime(value):
             if isinstance(value, time):
-               
                 return datetime.combine(datetime.today(), value)
             if isinstance(value, str):
-             
                 try:
                     return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
                 except:
@@ -73,3 +77,7 @@ class Rezervacija:
             uporabnisko_ime=d.get("uporabnisko_ime", ""),
             registrska_stevilka=d.get("registrska_stevilka", ""),
         )
+
+    @classmethod
+    def from_row(cls, row):
+        return cls.from_dict(dict(row))

@@ -1,12 +1,75 @@
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Seznam rezervacij</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f9f9f9;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        .filter-row input {
+            width: 100%;
+            padding: 6px;
+            box-sizing: border-box;
+        }
+
+        .rezervacije-tabela {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+
+        .rezervacije-tabela th,
+        .rezervacije-tabela td {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .rezervacije-tabela th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+
+        .rezervacije-tabela tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .rezervacije-tabela tr:hover {
+            background-color: #eef;
+        }
+    </style>
+    <script>
+        function filtrirajTabelo() {
+            const inputi = document.querySelectorAll('.filter-row input');
+            const vrstice = document.querySelectorAll('.rezervacije-tabela tbody tr');
+
+            vrstice.forEach(vrstica => {
+                let vidno = true;
+                inputi.forEach((input, indeks) => {
+                    const celica = vrstica.cells[indeks].textContent.toLowerCase();
+                    const vrednost = input.value.toLowerCase();
+                    if (vrednost && !celica.includes(vrednost)) {
+                        vidno = false;
+                    }
+                });
+                vrstica.style.display = vidno ? '' : 'none';
+            });
+        }
+    </script>
 </head>
 <body>
     <h1>Rezervacije</h1>
-    <table border="1">
+    <table class="rezervacije-tabela">
         <thead>
             <tr>
                 <th>Uporabnik</th>
@@ -15,6 +78,14 @@
                 <th>Registrska številka</th>
                 <th>Prihod</th>
                 <th>Odhod</th>
+            </tr>
+            <tr class="filter-row">
+                <th><input type="text" onkeyup="filtrirajTabelo()" placeholder="Išči uporabnika"></th>
+                <th><input type="text" onkeyup="filtrirajTabelo()" placeholder="Išči lokacijo"></th>
+                <th><input type="text" onkeyup="filtrirajTabelo()" placeholder="Išči mesto"></th>
+                <th><input type="text" onkeyup="filtrirajTabelo()" placeholder="Išči registracijo"></th>
+                <th><input type="text" onkeyup="filtrirajTabelo()" placeholder="Išči prihod"></th>
+                <th><input type="text" onkeyup="filtrirajTabelo()" placeholder="Išči odhod"></th>
             </tr>
         </thead>
         <tbody>
@@ -32,5 +103,3 @@
     </table>
 </body>
 </html>
-
-

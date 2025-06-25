@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+%rebase('osnova.html', naslov='Moje rezervacije', stran='moje_rezervacije')
+<html>
+<head>
+    <title>Moje rezervacije</title>
+</head>
+<body>
+    <h1>Moje rezervacije</h1>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Lokacija</th>
+                <th>Parkirno mesto</th>
+                <th>Registrska številka</th>
+                <th>Prihod</th>
+                <th>Odhod</th>
+                <th>Možnosti</th>
+            </tr>
+        </thead>
+        <tbody>
+            % for r in moje_rezervacije:
+            <tr>
+                <td>{{r.lokacija}}</td>
+                <td>{{r.id_parkirnega_mesta}}</td>
+                <td>{{r.registrska_stevilka}}</td>
+                <td>{{r.prihod}}</td>
+                <td>{{r.odhod}}</td>
+                <td> <form method="post" action="/moje_rezervacije" style="display:inline;">
+            <button name="akcija" value="preklici" type="submit">Prekliči</button>
+            <button name="akcija" value="podaljsaj" type="submit">Podaljšaj +1h</button>
+        </form></td>
+            </tr>
+            % end
+        </tbody>
+    </table>
+
+</body>
+</html>
