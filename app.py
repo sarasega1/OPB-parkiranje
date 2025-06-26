@@ -152,10 +152,10 @@ def prijava():
         redirect(url('/'))
         
     else:
-        return template("prijava.html", uporabnik=None, rola=None, napaka="Neuspešna prijava. Napačno geslo ali uporabniško ime.", url = url)
+        return template("prijava.html", uporabnik=None, rola=None, napaka="Neuspešna prijava. Napačno geslo ali uporabniško ime.")
 @get('/prijava')
 def prijava_get():
-    return template("prijava.html", napaka=None, rola = None, url = url)
+    return template("prijava.html", napaka=None, rola = None)
 
 @get('/odjava')
 def odjava():
@@ -289,9 +289,88 @@ def moje_rezervacije():
     uporabnik = service.dobi_uporabnika(uporabnisko_ime)
     rezervacije = service.dobi_rezervacije_uporabnika(uporabnisko_ime)
     
-    return template('moje_rezervacije', moje_rezervacije=rezervacije, url = url)
+    return template('moje_rezervacije', moje_rezervacije=rezervacije)
 
 from bottle import post, request, redirect
+
+@post('/moje_rezervacije')
+@cookie_required
+def urejanje_rezervacije():
+    uporabnisko_ime = request.get_cookie("uporabnik")  # Pravilna vrednost!
+    if uporabnisko_ime is None:
+        redirect('/prijava')
+
+    response.set_cookie("uporabnisko_ime", uporabnisko_ime)  # Zdaj ima vrednost
+
+    service = ParkirisceService()
+
+    rezervacija_id = request.forms.get('rezervacija_id')
+    akcija = request.forms.get('akcija')
+
+    rezervacije = service.dobi_rezervacije_uporabnika(uporabnisko_ime)
+    rezervacija_ids = [str(r.id) for r in rezervacije]
+
+    if rezervacija_id not in rezervacija_ids:
+        return "Napaka: Nepravilna rezervacija."
+
+    if akcija == 'preklici':
+        service.odstrani_rezervacijo(int(rezervacija_id))
+
+    elif akcija == 'podaljsaj':
+        service.podaljsaj_rezervacijo(int(rezervacija_id), ure=1)
+
+    redirect('/moje_rezervacije')
+
+
+
+@get('/preklici_rezervacijo/<lokacija>/<id_parkirnega_mesta:int>')
+@cookie_required
+def potrdi_preklic(lokacija, id_parkirnega_mesta):
+    uporabnisko_ime = request.get_cookie("uporabnik")
+    if not uporabnisko_ime:
+        redirect('/prijava')
+
+    service = ParkirisceService()
+    rezervacije = service.dobi_rezervacije_uporabnika(uporabnisko_ime)
+
+    # Poišči rezervacijo po lokaciji in ID parkirnega mesta
+    rezervacija = next(
+        (r for r in rezervacije if r.lokacija == lokacija and r.id_parkirnega_mesta == id_parkirnega_mesta),
+        None
+    )
+
+    if rezervacija is None:
+        return template('napaka.html', napaka="Rezervacija ne obstaja ali nimaš dostopa.")
+
+    sedaj = datetime.now()
+    if rezervacija.odhod <= sedaj or rezervacija.prihod.date() != sedaj.date():
+        return template('moje_rezervacije', moje_rezervacije=rezervacije, napaka="Preklic ni možen.")
+
+    return template('potrdi_preklic.html', rezervacija=rezervacija)
+@post('/preklici_rezervacijo/<lokacija>/<id_parkirnega_mesta:int>/potrdi')
+@cookie_required
+def izvrsi_preklic(lokacija, id_parkirnega_mesta):
+    uporabnisko_ime = request.get_cookie("uporabnik")
+    if not uporabnisko_ime:
+        redirect('/prijava')
+
+    service = ParkirisceService()
+    rezervacije = service.dobi_rezervacije_uporabnika(uporabnisko_ime)
+
+    rezervacija = next(
+        (r for r in rezervacije if r.lokacija == lokacija and r.id_parkirnega_mesta == id_parkirnega_mesta),
+        None
+    )
+
+    if rezervacija is None:
+        return template('napaka.html', napaka="Rezervacija ne obstaja ali nimaš dostopa.")
+
+    sedaj = datetime.now()
+    if rezervacija.odhod <= sedaj or rezervacija.prihod.date() != sedaj.date():
+        return template('moje_rezervacije', moje_rezervacije=rezervacije, napaka="Preklic ni možen.")
+
+    service.odstrani_rezervacijo_z_lokacijo_in_mestom(lokacija, id_parkirnega_mesta)
+    redirect('/moje_rezervacije')
 
 @post('/moje_rezervacije')
 @cookie_required
@@ -357,10 +436,15 @@ def podaljsaj_rezervacijo():
     service.podaljsaj_rezervacijo_po_kljucih(lokacija, id_parkirnega_mesta, prihod_dt, ure)
 
     redirect('/moje_rezervacije')
+# Spremeni formo v 'moje_rezervacije.html':
+# Namesto POST na /moje_rezervacije, naj gumb "Prekliči" vodi na /preklici_rezervacijo/{{r.id}}
+
+# npr.
+# <td><a href="/preklici_rezervacijo/{{r.id}}">Prekliči</a></td>
 
 
 
 if __name__ == "__main__":
    
     run(host='localhost', port=SERVER_PORT, reloader=RELOADER, debug=True)
-0
+

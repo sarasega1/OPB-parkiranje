@@ -4,7 +4,6 @@ from bottle import *
 from bottle import TEMPLATE_PATH
 
 
-
 # Potrebujemo, če želimo, da imamo html datoteke v pod mapi
 TEMPLATE_PATH.append('./Presentation/views')
 
@@ -41,3 +40,4 @@ def template_user(*largs, **kwargs):
 
 
 bottle.Route = Route
+

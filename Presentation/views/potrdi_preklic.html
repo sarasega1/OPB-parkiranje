@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Potrditev preklica</title>
+</head>
+<body>
+    <h2>Ali ste prepričani, da želite preklicati rezervacijo na lokaciji {{ rezervacija.lokacija }} za parkirno mesto {{ rezervacija.id_parkirnega_mesta }}?</h2>
+
+    <form method="post" action="/preklici_rezervacijo/{{ rezervacija.lokacija }}/{{ rezervacija.id_parkirnega_mesta }}/potrdi">
+        <button type="submit">Da</button>
+        <a href="/moje_rezervacije"><button type="button">Ne</button></a>
+    </form>
+</body>
+</html>
