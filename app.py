@@ -294,33 +294,7 @@ def moje_rezervacije():
     return template('moje_rezervacije', moje_rezervacije=rezervacije, aktivne_rezervacije=aktivne_rezervacije, now=now)
 from bottle import post, request, redirect
 
-@post('/moje_rezervacije')
-@cookie_required
-def urejanje_rezervacije():
-    uporabnisko_ime = request.get_cookie("uporabnik")  # Pravilna vrednost!
-    if uporabnisko_ime is None:
-        redirect('/prijava')
 
-    response.set_cookie("uporabnisko_ime", uporabnisko_ime)  # Zdaj ima vrednost
-
-    service = ParkirisceService()
-
-    rezervacija_id = request.forms.get('rezervacija_id')
-    akcija = request.forms.get('akcija')
-
-    rezervacije = service.dobi_rezervacije_uporabnika(uporabnisko_ime)
-    rezervacija_ids = [str(r.id) for r in rezervacije]
-
-    if rezervacija_id not in rezervacija_ids:
-        return "Napaka: Nepravilna rezervacija."
-
-    if akcija == 'preklici':
-        service.odstrani_rezervacijo(int(rezervacija_id))
-
-    elif akcija == 'podaljsaj':
-        service.podaljsaj_rezervacijo(int(rezervacija_id), ure=1)
-
-    redirect('/moje_rezervacije')
 
 
 @get('/preklici_rezervacijo/<lokacija>/<id_parkirnega_mesta:int>')
@@ -341,7 +315,6 @@ def potrdi_preklic(lokacija, id_parkirnega_mesta):
 
     if rezervacija is None:
         return template('napaka.html', napaka="Rezervacija ne obstaja ali nimaš dostopa.")
-
 
 
     sedaj = datetime.now()
