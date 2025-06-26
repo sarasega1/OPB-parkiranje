@@ -260,6 +260,21 @@ class Repo:
         """, (rezervacija.odhod, rezervacija.lokacija, rezervacija.id_parkirnega_mesta, rezervacija.prihod))
         self.conn.commit()
 
+    def prekini_rezervacijo(self, lokacija, id_parkirnega_mesta):
+        trenutni_cas = datetime.now().replace(second=0, microsecond=0)
+        cur = self.conn.cursor()
+        cur.execute("""
+            UPDATE rezervacija
+            SET odhod = %s
+            WHERE lokacija = %s
+              AND id_parkirnega_mesta = %s
+              AND odhod > %s
+        """, (trenutni_cas, lokacija, id_parkirnega_mesta, trenutni_cas))
+        self.conn.commit()
+        spremembe = cur.rowcount
+        cur.close()
+        return spremembe > 0    
+
 if __name__ == "__main__":
     repo = Repo()
     parkirisca = repo.dobi_parkirisca()

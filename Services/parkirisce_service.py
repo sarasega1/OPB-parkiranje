@@ -92,7 +92,8 @@ class ParkirisceService:
     def odstrani_rezervacijo_po_kljucih(self, lokacija: str, id_parkirnega_mesta: int, prihod: datetime) -> None:
         self.repo.odstrani_rezervacijo_po_kljucih(lokacija, id_parkirnega_mesta, prihod)
 
-
+    def prekini_rezervacijo(self, lokacija, id_parkirnega_mesta):
+        return self.repo.prekini_rezervacijo(lokacija, id_parkirnega_mesta)
     
 
 
