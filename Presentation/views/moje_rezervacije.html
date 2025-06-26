@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-%rebase('osnova.html', naslov='Moje rezervacije', stran='moje_rezervacije')
+% rebase('osnova.html', naslov='Moje rezervacije', stran='moje_rezervacije')
 <html>
 <head>
     <title>Moje rezervacije</title>
@@ -19,22 +19,25 @@
             </tr>
         </thead>
         <tbody>
-            % for r in moje_rezervacije:
+            % for r in rezervacije:
             <tr>
                 <td>{{r.lokacija}}</td>
                 <td>{{r.id_parkirnega_mesta}}</td>
                 <td>{{r.registrska_stevilka}}</td>
                 <td>{{r.prihod}}</td>
                 <td>{{r.odhod}}</td>
+                % if r.prihod <= now <= r.odhod:
                 <td>
-                    <!-- Preklic vodi na potrditveno stran s kombinacijo lokacije in ID -->
                     <a href="/preklici_rezervacijo/{{r.lokacija}}/{{r.id_parkirnega_mesta}}">
                         <button type="button">Prekliči</button>
                     </a>
-                      <a href="/podaljsaj_rezervacijo?lokacija={{r.lokacija}}&id_parkirnega_mesta={{r.id_parkirnega_mesta}}&prihod={{r.prihod}}">
-            <button type="button">Podaljšaj</button>
-                 </a>
+                    <a href="/podaljsaj_rezervacijo?lokacija={{r.lokacija}}&id_parkirnega_mesta={{r.id_parkirnega_mesta}}&prihod={{r.prihod}}">
+                        <button type="button">Podaljšaj</button>
+                    </a>
                 </td>
+                % else:
+                <td>Rezervacija je potekla</td>
+                % end
             </tr>
             % end
         </tbody>

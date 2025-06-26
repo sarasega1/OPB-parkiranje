@@ -285,12 +285,13 @@ def moje_rezervacije():
         redirect('/prijava')
 
     service = ParkirisceService()
-
-    uporabnik = service.dobi_uporabnika(uporabnisko_ime)
     rezervacije = service.dobi_rezervacije_uporabnika(uporabnisko_ime)
-    
-    return template('moje_rezervacije', moje_rezervacije=rezervacije)
+    uporabnik = service.dobi_uporabnika(uporabnisko_ime)
+    now = datetime.now()
+    # lahko filtriraš aktivne že tukaj
+    aktivne_rezervacije = [r for r in rezervacije if r.prihod <= now <= r.odhod]
 
+    return template('moje_rezervacije', rezervacije=rezervacije, aktivne_rezervacije=aktivne_rezervacije, now=now)
 from bottle import post, request, redirect
 
 @post('/moje_rezervacije')
