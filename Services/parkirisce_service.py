@@ -75,12 +75,17 @@ class ParkirisceService:
         self.repo.posodobi_rezervacijo(rezervacija)
 
 
-    def podaljsaj_rezervacijo_po_kljucih(self, lokacija: str, id_parkirnega_mesta: int, prihod: datetime, ure: int):
+    def podaljsaj_rezervacijo_po_kljucih(self, lokacija: str, id_parkirnega_mesta: int, prihod: datetime, minute: int):
         rezervacija = self.repo.dobi_rezervacijo_po_kljucih(lokacija, id_parkirnega_mesta, prihod)
-        if rezervacija is None:
-            raise ValueError("Rezervacija ni najdena.")
+       
+        now = datetime.now()
 
-        rezervacija.odhod += timedelta(hours=ure)
+    # če je trenutni odhod v prihodnosti, podaljšaj od njega naprej
+        if rezervacija.odhod > now:
+            rezervacija.odhod += timedelta(minutes=minute)
+        else:
+        # če je že potekla, podaljšaj od zdaj naprej
+            rezervacija.odhod = now + timedelta(minutes=minute)
 
         self.repo.posodobi_rezervacijo_po_kljucih(rezervacija)
 

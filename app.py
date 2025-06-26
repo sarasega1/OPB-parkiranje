@@ -417,6 +417,8 @@ def prikazi_podaljsaj_obrazec():
                     prihod=prihod)
 
 
+from bottle import response
+
 @post('/podaljsaj_rezervacijo')
 @cookie_required
 def podaljsaj_rezervacijo():
@@ -427,15 +429,27 @@ def podaljsaj_rezervacijo():
     lokacija = request.forms.get('lokacija')
     id_parkirnega_mesta = int(request.forms.get('id_parkirnega_mesta'))
     prihod = request.forms.get('prihod')
-    ure = int(request.forms.get('ure'))
+    minute_str = request.forms.get('cas')
+    if minute_str is None:
+        response.status = 400
+        return "Napaka: Manjka podatek 'cas'"
 
-    from datetime import datetime, timedelta
+    minute = int(minute_str)
+
+    from datetime import datetime
     prihod_dt = datetime.strptime(prihod, "%Y-%m-%d %H:%M:%S")
 
     service = ParkirisceService()
-    service.podaljsaj_rezervacijo_po_kljucih(lokacija, id_parkirnega_mesta, prihod_dt, ure)
+    rezervacija = service.repo.dobi_rezervacijo_po_kljucih(lokacija, id_parkirnega_mesta, prihod_dt)
+    if rezervacija is None:
+        return "Rezervacija je potekla ali ne obstaja."
+
+    # če obstaja, nadaljuj s podaljšanjem
+    service.podaljsaj_rezervacijo_po_kljucih(lokacija, id_parkirnega_mesta, prihod_dt, minute)
 
     redirect('/moje_rezervacije')
+
+
 # Spremeni formo v 'moje_rezervacije.html':
 # Namesto POST na /moje_rezervacije, naj gumb "Prekliči" vodi na /preklici_rezervacijo/{{r.id}}
 
