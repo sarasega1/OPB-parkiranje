@@ -290,8 +290,13 @@ def moje_rezervacije():
     now = datetime.now()
     # lahko filtriraš aktivne že tukaj
     aktivne_rezervacije = [r for r in rezervacije if r.prihod <= now <= r.odhod]
+    sporocilo = request.get_cookie("flash_message")
+    response.delete_cookie("flash_message")
 
-    return template('moje_rezervacije', moje_rezervacije=rezervacije, aktivne_rezervacije=aktivne_rezervacije, now=now)
+   
+
+    
+    return template('moje_rezervacije', moje_rezervacije=rezervacije, aktivne_rezervacije=aktivne_rezervacije, now=now, sporocilo = sporocilo)
 from bottle import post, request, redirect
 
 
@@ -313,13 +318,7 @@ def potrdi_preklic(lokacija, id_parkirnega_mesta):
         None
     )
 
-    if rezervacija is None:
-        return template('napaka.html', napaka="Rezervacija ne obstaja ali nimaš dostopa.")
-
-
-    sedaj = datetime.now()
-    if rezervacija.odhod <= sedaj:
-        return template('moje_rezervacije', moje_rezervacije=rezervacije, napaka="Preklic ni možen.", now=sedaj)
+    return template('potrdi_preklic.html', rezervacija=rezervacija)
 
     
 @post('/preklici_rezervacijo/<lokacija>/<id_parkirnega_mesta:int>/potrdi')
@@ -340,16 +339,17 @@ def izvrsi_preklic(lokacija, id_parkirnega_mesta):
     if rezervacija is None:
         return template('napaka.html', napaka="Rezervacija ne obstaja ali nimaš dostopa.")
 
-    sedaj = datetime.now()
-    if rezervacija.odhod <= sedaj:
-        return template('moje_rezervacije', moje_rezervacije=rezervacije, napaka="Preklic ni možen.", now=sedaj)
+ 
 
     uspeh = service.prekini_rezervacijo(lokacija, id_parkirnega_mesta)
 
     if uspeh:
-        response.set_cookie("flash_message", "Rezervacija je uspešno preklicana.", path="/")
+        response.set_cookie("flash_message", "Rezervacija je preklicana.", path="/")
     else:
         response.set_cookie("flash_message", "Preklic rezervacije ni bil uspešen.", path="/")
+
+    redirect('/moje_rezervacije')
+
 
 @post('/moje_rezervacije')
 @cookie_required
