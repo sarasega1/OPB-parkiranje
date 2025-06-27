@@ -26,7 +26,7 @@ def cookie_required(f):
         cookie = request.get_cookie("uporabnik")                                
         if cookie:                                                                 
             return f(*args, **kwargs)
-        return template("prijava.html",uporabnik=None, rola=None, napaka="Potrebna je prijava!")
+        return template("prijava.html",uporabnik=None, rola=None, napaka="Potrebna je prijava!",url=url)
         
     return decorated
 
@@ -142,7 +142,7 @@ def prijava():
     password = request.forms.get('password')
 
     if not auth.obstaja_uporabnik(username):
-        return template("prijava.html", napaka="Uporabnik s tem imenom ne obstaja")
+        return template("prijava.html", napaka="Uporabnik s tem imenom ne obstaja",url=url)
 
     prijava = auth.prijavi_uporabnika(username, password)
     if prijava:
@@ -166,7 +166,7 @@ def odjava():
     response.delete_cookie("uporabnik")
     response.delete_cookie("rola")
     
-    return template('prijava.html', uporabnik=None, rola=None, napaka=None)
+    return template('prijava.html', uporabnik=None, rola=None, napaka=None,url=url)
 
 
 
@@ -273,7 +273,7 @@ def rezervacija_post(mesto_id):
 @cookie_required
 def vse_rezervacije():
     rezervacije = service.dobi_rezervacije()
-    return template_user('rezervacije.html', moje_rezervacije=rezervacije, napaka = None, stran = 'rezervacije')
+    return template_user('rezervacije.html', rezervacije=rezervacije, napaka = None, stran = 'rezervacije')
 
 
 
@@ -318,11 +318,10 @@ def potrdi_preklic(lokacija, id_parkirnega_mesta):
 
 
     sedaj = datetime.now()
-    if rezervacija.odhod <= sedaj or rezervacija.prihod.date() != sedaj.date():
+    if rezervacija.odhod <= sedaj:
         return template('moje_rezervacije', moje_rezervacije=rezervacije, napaka="Preklic ni možen.", now=sedaj)
 
     
-
 @post('/preklici_rezervacijo/<lokacija>/<id_parkirnega_mesta:int>/potrdi')
 @cookie_required
 def izvrsi_preklic(lokacija, id_parkirnega_mesta):
@@ -342,18 +341,16 @@ def izvrsi_preklic(lokacija, id_parkirnega_mesta):
         return template('napaka.html', napaka="Rezervacija ne obstaja ali nimaš dostopa.")
 
     sedaj = datetime.now()
-    if rezervacija.odhod <= sedaj or rezervacija.prihod.date() != sedaj.date():
+    if rezervacija.odhod <= sedaj:
         return template('moje_rezervacije', moje_rezervacije=rezervacije, napaka="Preklic ni možen.", now=sedaj)
 
     uspeh = service.prekini_rezervacijo(lokacija, id_parkirnega_mesta)
 
     if uspeh:
-        response.set_cookie("flash_message", "Rezervacija je uspesno preklicana.", path="/")
-
+        response.set_cookie("flash_message", "Rezervacija je uspešno preklicana.", path="/")
     else:
-        response.set_cookie("flash_message", "Preklic rezervacije ni bil uspesen.", path="/")
+        response.set_cookie("flash_message", "Preklic rezervacije ni bil uspešen.", path="/")
 
-    redirect('/moje_rezervacije')
 @post('/moje_rezervacije')
 @cookie_required
 def urejanje_rezervacije():

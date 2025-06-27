@@ -125,7 +125,8 @@
     <td>{{r.registrska_stevilka}}</td>
     <td>{{r.prihod}}</td>
     <td>{{r.odhod}}</td>
-    % if r.prihod < now < r.odhod:
+     % if r.prihod.date() == now.date() and r.prihod < now < r.odhod:
+
         <td class="gumbi">
             <a href="/preklici_rezervacijo/{{r.lokacija}}/{{r.id_parkirnega_mesta}}">
                 <button type="button">Prekliči</button>

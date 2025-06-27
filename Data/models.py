@@ -60,13 +60,17 @@ class Rezervacija:
     @staticmethod
     def from_dict(d: dict) -> "Rezervacija":
         def convert_to_datetime(value):
+            if isinstance(value, datetime):
+                return value
             if isinstance(value, time):
                 return datetime.combine(datetime.today(), value)
             if isinstance(value, str):
-                try:
-                    return datetime.strptime(value, "%Y-%m-%d %H:%M:%S")
-                except:
-                    pass
+                for fmt in ("%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M:%S.%f", "%Y-%m-%d %H:%M"):
+                    try:
+                        return datetime.strptime(value, fmt)
+                    except ValueError:
+                        continue
+                print(f"⚠️ Neznan format datuma: {value}")
             return value
 
         return Rezervacija(

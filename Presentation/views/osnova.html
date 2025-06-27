@@ -29,13 +29,13 @@
                 % else:
                     <a class="nav-link" href="/dobi_parkirisca">Parkirišča</a>
                 % end  
-
-                % if stran=='moje_rezervacije':
-                    <a class="nav-link active" href="/moje_rezervacije">Moje rezervacije</a>
-                % else:
-                    <a class="nav-link" href="/moje_rezervacije">Moje rezervacije</a>
-                % end  
-
+                 % if rola != 'admin':
+                    % if stran=='moje_rezervacije':
+                        <a class="nav-link active" href="/moje_rezervacije">Moje rezervacije</a>
+                    % else:
+                        <a class="nav-link" href="/moje_rezervacije">Moje rezervacije</a>
+                    % end  
+                % end
                 % if rola == 'admin':
                     % if stran=='rezervacije':
                         <a class="nav-link active" href="/rezervacije">Rezervacije</a>
