@@ -96,7 +96,7 @@
                 <td>{{r.id_parkirnega_mesta}}</td>
                 <td>{{r.registrska_stevilka}}</td>
                 <td>{{r.prihod}}</td>
-                <td>{{r.odhod}}</td>
+                <td>{{ r.odhod.strftime("%Y-%m-%d %H:%M:%S") }}</td>
             </tr>
             % end
         </tbody>
