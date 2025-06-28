@@ -1,5 +1,5 @@
 import psycopg2, psycopg2.extensions, psycopg2.extras
-psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) # se znebimo problemov s šumniki
+psycopg2.extensions.register_type(psycopg2.extensions.UNICODE) 
 import Data.auth_public as auth
 import os
 from datetime import datetime, time
@@ -9,16 +9,13 @@ from typing import List
 # Preberemo port za bazo iz okoljskih spremenljivk
 DB_PORT = os.environ.get('POSTGRES_PORT', 5432)
 
-## V tej datoteki bomo implementirali razred Repo, ki bo vseboval metode za delo z bazo.
-# py -m Data.repository
+
 class Repo:
     def __init__(self):
-        # Ko ustvarimo novo instanco definiramo objekt za povezavo in cursor
         self.conn = psycopg2.connect(database=auth.db, host=auth.host, user=auth.user, password=auth.password, port=DB_PORT)
         self.cur = self.conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
 
-    
     def dobi_osebo(self) -> List[Oseba]:               
         self.cur.execute("""
             SELECT ime, priimek, uporabnisko_ime, telefonska_stevilka
@@ -26,9 +23,10 @@ class Repo:
         
         """)
         
-        # rezultate querya pretovrimo v python seznam objektov (transkacij)
+        # rezultate querya pretvorimo v python seznam objektov (transkacij)
         osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
         return osebe  
+    
     def dobi_oseboDto(self) -> List[Oseba]:               
         self.cur.execute("""
             SELECT ime, priimek, uporabnisko_ime, telefonska_stevilka
@@ -36,7 +34,7 @@ class Repo:
         
         """)
         
-        # rezultate querya pretovrimo v python seznam objektov (transkacij)
+        # rezultate querya pretvorimo v python seznam objektov 
         osebe = [Oseba.from_dict(t) for t in self.cur.fetchall()]
         return osebe
 
@@ -48,7 +46,7 @@ class Repo:
         
         """)
         
-        # rezultate querya pretovrimo v python seznam objektov (transkacij)
+        # rezultate querya pretvorimo v python seznam objektov 
         parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
         return parkirisca
     
@@ -59,9 +57,10 @@ class Repo:
             
             """)
         
-            # rezultate querya pretovrimo v python seznam objektov (transkacij)
+            # rezultate querya pretvorimo v python seznam objektov 
             parkirisca = [Parkirisce.from_dict(t) for t in self.cur.fetchall()]
             return parkirisca
+    
     def dobi_parkirisce(self, id: int) -> Parkirisce:
         self.cur.execute("""
                      SELECT id, lokacija, dnevni_zasedeni, dnevni_na_voljo
@@ -72,6 +71,7 @@ class Repo:
         if row:
           return Parkirisce.from_dict(row)
         return None
+    
     def obstaja_oseba(self, uporabnisko_ime: str) -> bool:
         self.cur.execute("""
             SELECT COUNT(*) FROM osebe WHERE uporabnisko_ime = %s
@@ -85,33 +85,6 @@ class Repo:
             VALUES (%s, %s, %s, %s)
         """, (uporabnisko_ime, ime, priimek, telefonska_stevilka))
         self.conn.commit()
-
-   
-    def dobi_rezervacije(self) -> List[Rezervacija]:
-        self.cur.execute("SELECT * FROM rezervacija")
-        rows = self.cur.fetchall()
-        rezervacije = []
-        for t in rows:
-            prihod = t['prihod']
-            odhod = t['odhod']
-            # če je čas brez datuma, dodaj datum
-            if isinstance(prihod, time):
-                prihod = datetime.combine(datetime.today(), prihod)
-            if isinstance(odhod, time):
-                odhod = datetime.combine(datetime.today(), odhod)
-
-            r = Rezervacija(  
-                id_parkirnega_mesta=t['id_parkirnega_mesta'],
-                lokacija=t.get('lokacija', ''),
-                prihod=prihod,
-                odhod=odhod,
-                uporabnisko_ime=t['uporabnisko_ime'],
-                registrska_stevilka=t['registrska_stevilka']
-            )
-            rezervacije.append(r)
-        return rezervacije
-
-
 
     
     def dodaj_rezervacijo(self, rezervacija: Rezervacija):
@@ -159,8 +132,6 @@ class Repo:
         self.conn.commit()
 
   
-
-
     def dobi_rezervacije(self) -> List[Rezervacija]:
             self.cur.execute("""
                 SELECT r.*, p.lokacija
@@ -208,23 +179,9 @@ class Repo:
             SELECT * FROM rezervacija WHERE uporabnisko_ime = %s
         """, (uporabnisko_ime,))
         rows = self.cur.fetchall()
-        return [Rezervacija.from_dict(row) for row in rows]  # če imaš from_dict, ali ustrezno pretvorbo
+        return [Rezervacija.from_dict(row) for row in rows]  
 
 
-    def odstrani_rezervacijo(self, rezervacija_id: int) -> None:
-        self.cur.execute("DELETE FROM rezervacija WHERE id = %s", (rezervacija_id,))
-        self.conn.commit()
-
-    def dobi_rezervacijo(self, rezervacija_id: int) -> Rezervacija:
-        self.cur.execute("SELECT * FROM rezervacija WHERE id = %s", (rezervacija_id,))
-        rows = self.cur.fetchone()
-        return [Rezervacija.from_row(row) for row in rows]
-
-    def posodobi_rezervacijo(self, rezervacija: Rezervacija) -> None:
-        self.cur.execute("""
-            UPDATE rezervacija SET odhod = %s WHERE id = %s
-        """, (rezervacija.odhod, rezervacija.id))
-        self.conn.commit()
 
     def odstrani_rezervacijo_po_kljucih(self, lokacija: str, id_parkirnega_mesta: int, prihod: datetime) -> None:
         self.cur.execute("""

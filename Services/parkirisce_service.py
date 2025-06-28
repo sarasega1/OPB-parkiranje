@@ -63,16 +63,6 @@ class ParkirisceService:
         return self.repo.dobi_rezervacije_uporabnika(uporabnisko_ime)
 
 
-    def odstrani_rezervacijo(self, rezervacija_id: int) -> None:
-        self.repo.odstrani_rezervacijo(rezervacija_id)
-
-    def podaljsaj_rezervacijo(self, rezervacija_id: int, ure: int = 1) -> None:
-        # Najprej dobimo rezervacijo
-        rezervacija = self.repo.dobi_rezervacijo(rezervacija_id)
-        # Podaljšamo čas odhoda
-        rezervacija.odhod += timedelta(hours=ure)
-        # Posodobimo v bazi
-        self.repo.posodobi_rezervacijo(rezervacija)
 
 
     def podaljsaj_rezervacijo_po_kljucih(self, lokacija: str, id_parkirnega_mesta: int, prihod: datetime, minute: int):
