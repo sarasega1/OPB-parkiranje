@@ -273,6 +273,7 @@ def rezervacija_post(mesto_id):
 @cookie_required
 def vse_rezervacije():
     rezervacije = service.dobi_rezervacije()
+    rezervacije = sorted(rezervacije, key=lambda r: r.prihod, reverse=True)
     return template_user('rezervacije.html', rezervacije=rezervacije, napaka = None, stran = 'rezervacije')
 
 
@@ -286,20 +287,12 @@ def moje_rezervacije():
 
     service = ParkirisceService()
     rezervacije = service.dobi_rezervacije_uporabnika(uporabnisko_ime)
-    uporabnik = service.dobi_uporabnika(uporabnisko_ime)
     now = datetime.now()
-    # lahko filtriraš aktivne že tukaj
     aktivne_rezervacije = [r for r in rezervacije if r.prihod <= now <= r.odhod]
     sporocilo = request.get_cookie("flash_message")
     response.delete_cookie("flash_message")
 
-   
-
-    
     return template('moje_rezervacije', moje_rezervacije=rezervacije, aktivne_rezervacije=aktivne_rezervacije, now=now, sporocilo = sporocilo)
-from bottle import post, request, redirect
-
-
 
 
 @get('/preklici_rezervacijo/<lokacija>/<id_parkirnega_mesta:int>')
@@ -317,7 +310,6 @@ def potrdi_preklic(lokacija, id_parkirnega_mesta):
         (r for r in rezervacije if r.lokacija == lokacija and r.id_parkirnega_mesta == id_parkirnega_mesta),
         None
     )
-
     return template('potrdi_preklic.html', rezervacija=rezervacija)
 
     
@@ -338,11 +330,7 @@ def izvrsi_preklic(lokacija, id_parkirnega_mesta):
 
     if rezervacija is None:
         return template('napaka.html', napaka="Rezervacija ne obstaja ali nimaš dostopa.")
-
- 
-
     uspeh = service.prekini_rezervacijo(lokacija, id_parkirnega_mesta)
-
     if uspeh:
         response.set_cookie("flash_message", "Rezervacija je preklicana.", path="/")
     else:
@@ -376,7 +364,6 @@ def urejanje_rezervacije():
 
     redirect('/moje_rezervacije')
 
-from bottle import request, redirect, template
 
 @get('/podaljsaj_rezervacijo')
 @cookie_required
@@ -389,14 +376,13 @@ def prikazi_podaljsaj_obrazec():
     id_parkirnega_mesta = request.query.id_parkirnega_mesta
     prihod = request.query.prihod
 
-    # Prikaži obrazec za izbiro koliko časa želi uporabnik podaljšati
     return template('podaljsaj.html', 
                     lokacija=lokacija, 
                     id_parkirnega_mesta=id_parkirnega_mesta, 
                     prihod=prihod)
 
 
-from bottle import response
+
 
 @post('/podaljsaj_rezervacijo')
 @cookie_required
@@ -414,8 +400,6 @@ def podaljsaj_rezervacijo():
         return "Napaka: Manjka podatek 'cas'"
 
     minute = int(minute_str)
-
-    from datetime import datetime
     prihod_dt = datetime.strptime(prihod, "%Y-%m-%d %H:%M:%S")
 
     service = ParkirisceService()
@@ -423,18 +407,9 @@ def podaljsaj_rezervacijo():
     if rezervacija is None:
         return "Rezervacija je potekla ali ne obstaja."
 
-    # če obstaja, nadaljuj s podaljšanjem
     service.podaljsaj_rezervacijo_po_kljucih(lokacija, id_parkirnega_mesta, prihod_dt, minute)
 
     redirect('/moje_rezervacije')
-
-
-# Spremeni formo v 'moje_rezervacije.html':
-# Namesto POST na /moje_rezervacije, naj gumb "Prekliči" vodi na /preklici_rezervacijo/{{r.id}}
-
-# npr.
-# <td><a href="/preklici_rezervacijo/{{r.id}}">Prekliči</a></td>
-
 
 
 if __name__ == "__main__":

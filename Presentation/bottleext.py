@@ -19,14 +19,11 @@ class Route(bottle.Route):
             return callback(*largs, **kwargs)
         super().__init__(app, rule, method, decorator, name, plugins, skiplist, **config)
 
-
 def template(*largs, **kwargs):
-    """
-    Izpis predloge s podajanjem funkcije url.
-    """
+    if 'url' not in kwargs:
+        kwargs['url'] = bottle.url
+    return bottle.template(*largs, **kwargs)
 
-    
-    return bottle.template(*largs, **kwargs, url=bottle.url)
 
 def template_user(*largs, **kwargs):
     """
