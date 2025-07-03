@@ -2,4 +2,4 @@
 db = 'sem2025_segasa'
 host = 'baza.fmf.uni-lj.si'
 user = 'segasa'
-password = 'pea3096n'
+password = ''
